@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>HyperZebra — HyperCard stacks and classic Mac applications</title>
-  <meta name="description" content="Download HyperZebra to import and edit HyperCard stacks, use HyperTalk, color and shapes, and run classic Mac applications.">
+  <title>HyperZebra — HyperCard stacks and classic Mac applications, on today’s computers</title>
+  <meta name="description" content="Free software that opens, edits, and runs HyperCard stacks, and runs classic Mac 68K and PowerPC applications without a Mac ROM or OS. For macOS, Windows, and Linux.">
   <meta name="theme-color" content="#faf9f6">
-  <meta property="og:type" content="article">
-  <meta property="og:title" content="HyperZebra — HyperCard stacks and classic Mac applications">
-  <meta property="og:description" content="Download HyperZebra to import and edit HyperCard stacks, use HyperTalk, color and shapes, and run classic Mac applications.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="HyperZebra — HyperCard stacks and classic Mac applications, on today’s computers">
+  <meta property="og:description" content="Free software that opens, edits, and runs HyperCard stacks, and runs classic Mac 68K and PowerPC applications without a Mac ROM or OS. For macOS, Windows, and Linux.">
   <meta property="og:locale" content="en_US">
   <link rel="alternate" hreflang="ja" href="../index.html">
   <link rel="stylesheet" href="../assets/style.css">
@@ -18,136 +18,120 @@
 <div class="shell">
   <header class="site-header">
     <a class="wordmark" href="index.html">HyperZebra</a>
-    <nav class="languages" aria-label="Language"><a lang="ja" hreflang="ja" href="../index.html">日本語</a><span lang="en" aria-current="page">English</span></nav>
+    <nav class="header-links" aria-label="Links and language"><a class="repository" href="https://github.com/pgostation/HyperZebra">GitHub</a><a lang="ja" hreflang="ja" href="../index.html">日本語</a><span lang="en" aria-current="page">English</span></nav>
   </header>
   <main id="main">
     <div class="hero">
-      <p class="eyebrow">ABOUT THE SOFTWARE</p>
-      <h1>HyperZebra</h1>
-      <p class="subtitle">An environment for HyperCard stacks<br>and classic Mac applications</p>
-      <p class="hero-intro">HyperZebra imports HyperCard stacks, lets you browse and edit their cards, and runs supported HyperTalk scripts. It adds authoring features such as color and editable shapes, and includes a compatibility environment for classic Macintosh 68K and PowerPC applications.</p>
-      <div class="hero-download">
-        <a class="download-button" href="https://github.com/pgostation/HyperZebra/releases">Download HyperZebra <span aria-hidden="true">↓</span></a>
-        <p class="download-note">Opens the download page on GitHub Releases.</p>
+      <div class="hero-text">
+        <h1>HyperZebra</h1>
+        <p class="subtitle">HyperCard stacks and classic Mac applications, on today’s computers.</p>
+        <p class="hero-intro">Open HyperCard stacks to browse, edit, and run them. HyperZebra also runs classic Mac 68K and PowerPC applications, with no Mac ROM or Mac OS required.</p>
+        <div class="hero-download">
+          <a class="download-button" href="https://github.com/pgostation/HyperZebra/releases">Download HyperZebra <span aria-hidden="true">↓</span></a>
+          <p class="download-note">For macOS, Windows, and Linux, free of charge. Opens the download page on GitHub Releases.</p>
+        </div>
+        <p class="independence-notice">HyperZebra is an unofficial compatibility environment. It is not affiliated with Apple Inc. and is not developed, endorsed, or supported by Apple Inc.</p>
       </div>
-      <p class="independence-notice">HyperZebra is an unofficial compatibility environment. This project is not affiliated with Apple Inc. and is not developed, endorsed, or supported by Apple Inc.</p>
-      <div class="metadata"><time datetime="2026-10-11">Updated October 11, 2026</time><span>Screenshots captured on macOS</span></div>
+      <figure class="hero-figure">
+        <a class="figure-link image-stage" href="../images/launcher.png" target="_blank" rel="noopener" aria-label="Open full-size image: The HyperZebra launcher displaying stacks, Mac applications, documents, and a dock.">
+          <img src="../images/launcher.png" width="995" height="810" alt="The HyperZebra launcher displaying a history of stacks, Mac applications, and documents, with a dock along the bottom." fetchpriority="high" decoding="async">
+        </a>
+        <figcaption>The launcher. Open stacks and applications from the history or the dock.</figcaption>
+      </figure>
     </div>
-    <figure class="hero-figure" id="figure-01">
-  <a class="figure-link image-stage " href="../images/launcher.png" target="_blank" rel="noopener" aria-label="Open full-size image: The HyperZebra launcher displaying stacks, Mac applications, documents, and a dock.">
-    <img src="../images/launcher.png" width="995" height="810" alt="The HyperZebra launcher displaying stacks, Mac applications, documents, and a dock." fetchpriority="high" decoding="async">
-  </a>
-  <figcaption><span class="figure-number">FIG. 01</span>The HyperZebra launcher, with a history of stacks, applications, and documents, and a dock along the bottom.</figcaption>
-</figure>
-    <div class="article-grid">
-      <nav class="contents" aria-label="IN THIS ARTICLE">
-        <p class="contents-title">IN THIS ARTICLE</p>
-        <ol><li><a href="#about">What HyperZebra does</a></li>
-<li><a href="#launcher">The launcher</a></li>
-<li><a href="#stacks">HyperCard stacks</a></li>
-<li><a href="#authoring">Color and shapes</a></li>
-<li><a href="#hypertalk">HyperTalk scripts</a></li>
-<li><a href="#applications">Classic Mac applications</a></li>
-<li><a href="#compatibility">Frequently asked questions</a></li>
-<li><a href="#project">Project and references</a></li></ol>
-        <p class="contents-note">Select an image to open the full-size capture in a new tab.</p>
-      </nav>
-      <article aria-label="HyperZebra — HyperCard stacks and classic Mac applications"><section class="article-section" id="about" aria-labelledby="heading-about"><div class="section-number">01</div><h2 id="heading-about">What HyperZebra does</h2>
-<p>HyperZebra combines tools for working with HyperCard stacks with a compatibility environment for classic Macintosh applications. You can open an existing stack, browse its contents, edit its cards and scripts, or launch a supported Mac application.</p>
-<p>HyperZebra builds on HyperCard’s ease of use and adds features for working with color, shapes, and arrays.</p></section>
-<section class="article-section" id="launcher" aria-labelledby="heading-launcher"><div class="section-number">02</div><h2 id="heading-launcher">Opening stacks and applications</h2>
-<p>HyperZebra starts with a launcher. Choose “Open File…” or drop a file onto the window to open a stack or an application.</p>
-<p>You can add frequently used applications and stacks to the dock at the bottom.</p>
-<p>Settings include Japanese and English interface languages and display zoom. Classic Mac applications also have individual settings for screen size, color depth, and execution speed.</p></section>
-<section class="article-section" id="stacks" aria-labelledby="heading-stacks"><div class="section-number">03</div><h2 id="heading-stacks">Importing and using HyperCard stacks</h2>
-<p>When you open a HyperCard stack, it is converted into a HyperZebra stack.</p>
-<p>The screenshot below shows the imported “Train Set” stack.</p>
-<figure class="article-figure" id="figure-02">
-  <a class="figure-link image-stage " href="../images/imported-stack.png" target="_blank" rel="noopener" aria-label="Open full-size image: A Train Set card with monochrome railway tracks, a train, and buttons including Build and Run.">
-    <img src="../images/imported-stack.png" width="624" height="486" alt="A Train Set card with monochrome railway tracks, a train, and buttons including Build and Run." loading="lazy" decoding="async">
-  </a>
-  <figcaption><span class="figure-number">FIG. 02</span>The imported HyperCard stack “Train Set.”</figcaption>
-</figure>
-<p>The converted data is stored in a <code>.hzb</code> file created beside the original stack. Open that file for subsequent work.</p></section>
-<section class="article-section" id="authoring" aria-labelledby="heading-authoring"><div class="section-number">04</div><h2 id="heading-authoring">Editing cards with color and shapes</h2>
-<p>You can edit existing stacks or create new ones in HyperZebra. Use the tool palette to place buttons and fields, and the painting tools to draw pictures.</p>
-<p>The “Neon Rift” editing example shows the game screen with the tool palette, color palette, and card information dialog open.</p>
-<figure class="article-figure" id="figure-03">
-  <a class="figure-link image-stage editor" href="../images/card-editor-color.png" target="_blank" rel="noopener" aria-label="Open full-size image: The colorful Neon Rift card with a tool palette, a color palette, and the card information dialog open.">
-    <img src="../images/card-editor-color.png" width="1184" height="801" alt="The colorful Neon Rift card with a tool palette, a color palette, and the card information dialog open." loading="lazy" decoding="async">
-  </a>
-  <figcaption><span class="figure-number">FIG. 03</span>Editing “Neon Rift.”</figcaption>
-</figure>
-<p>Alongside painting, HyperZebra supports editable shapes: rectangles, ellipses, polygons, curves, and text. Shapes can have colors, gradients, opacity, and rotation. Neon Rift is a game sample built with these shapes and HyperTalk.</p>
-<h3>Grouping elements and presenting data</h3>
-<p>Panels group elements so they can be moved, shown, or hidden together. They can also hold data and scripts. Fields can present their contents as tables or hierarchical outlines, and supported SVG elements can be imported as editable shapes.</p></section>
-<section class="article-section" id="hypertalk" aria-labelledby="heading-hypertalk"><div class="section-number">05</div><h2 id="heading-hypertalk">Adding behavior with HyperTalk</h2>
-<p>The script editor includes a command and function reference, and a debugger that can pause execution and inspect variables. Stepping through a script helps connect each statement to what happens on screen.</p>
-<p>HyperZebra also adds arrays, dictionaries, web text retrieval, JSON, and regular expressions. The same scripting language can handle both card interactions and data processing.</p></section>
-<section class="article-section" id="applications" aria-labelledby="heading-applications"><div class="section-number">06</div><h2 id="heading-applications">Running classic Mac applications</h2>
-<p>HyperZebra also includes a compatibility environment for running classic Macintosh 68K and PowerPC code.</p>
-<p>It emulates the applications’ CPU instructions and provides Mac Toolbox services for windows, menus, graphics, sound, and file access. Rather than booting a complete classic Mac OS installation, HyperZebra implements the services applications need to run.</p>
-<p>Unlike conventional Mac emulators, it does not require a ROM or an OS installation.</p>
-<figure class="article-figure" id="figure-04">
-  <a class="figure-link image-stage " href="../images/classic-mac-app.png" target="_blank" rel="noopener" aria-label="Open full-size image: A ClarisWorks word-processing document displaying the text “ClarisWorks on HyperZebra.”">
-    <img src="../images/classic-mac-app.png" width="728" height="581" alt="A ClarisWorks word-processing document displaying the text “ClarisWorks on HyperZebra.”" loading="lazy" decoding="async">
-  </a>
-  <figcaption><span class="figure-number">FIG. 04</span>ClarisWorks running in HyperZebra, displaying text in a word-processing document.</figcaption>
-</figure>
-<p>3D games can also run.</p>
-<figure class="article-figure" id="figure-05">
-  <a class="figure-link image-stage game" href="../images/3d-mac-game.png" target="_blank" rel="noopener" aria-label="Open full-size image: A 3D game displaying grassy terrain, cliffs, a central character, a map, and a score panel.">
-    <img src="../images/3d-mac-game.png" width="686" height="526" alt="A 3D game displaying grassy terrain, cliffs, a central character, a map, and a score panel." loading="lazy" decoding="async">
-  </a>
-  <figcaption><span class="figure-number">FIG. 05</span>A 3D game running in HyperZebra, displaying terrain, a character, and the game’s on-screen information.</figcaption>
-</figure>
-<p>Text and pictures can be exchanged with the host OS through the clipboard. Screen size, color depth, zoom, and speed settings can be adjusted for individual applications.</p></section>
-<section class="article-section faq" id="compatibility" aria-labelledby="heading-compatibility"><div class="section-number">07</div><h2 id="heading-compatibility">Frequently asked questions</h2><p>Questions about creating stacks, running Mac applications, and the project’s development. Select a question to read its answer.</p><nav class="faq-topics" aria-label="FAQ topics"><a href="#faq-hypercard">HyperCard</a> / <a href="#faq-mac">The Mac compatibility layer</a> / <a href="#faq-development">Development</a></nav>
-<div class="faq-group" id="faq-hypercard"><h3>HyperCard</h3>
-<details class="faq-item" id="faq-hypercard-what"><summary>What is this?</summary><div class="faq-answer"><p>It is an environment for running and editing HyperCard stacks. You can display their cards and pictures and edit their contents and scripts.</p></div></details>
+
+    <section class="section" id="features" aria-labelledby="heading-features">
+      <h2 id="heading-features">What it does</h2>
+      <ul class="points">
+        <li class="point">
+          <a class="figure-link image-stage" href="../images/imported-stack.png" target="_blank" rel="noopener" aria-label="Open full-size image: A card of Train Set.">
+            <img src="../images/imported-stack.png" width="624" height="486" alt="The imported HyperCard stack “Train Set,” with black-and-white track, a train, and buttons such as Build and Run." loading="lazy" decoding="async">
+          </a>
+          <h3>Open HyperCard stacks</h3>
+          <p>Import old stacks, browse their cards, and run their HyperTalk scripts and external commands.</p>
+        </li>
+        <li class="point">
+          <a class="figure-link image-stage editor" href="../images/card-editor-color.png" target="_blank" rel="noopener" aria-label="Open full-size image: Editing Neon Rift.">
+            <img src="../images/card-editor-color.png" width="1184" height="801" alt="The color game “Neon Rift” being edited, with the tool palette, color palette, and card information dialog open." loading="lazy" decoding="async">
+          </a>
+          <h3>Create with color and shapes</h3>
+          <p>Build stacks with features HyperCard did not have, such as color painting, editable shapes, and panels. Shown: “Neon Rift,” a game made with shapes and HyperTalk.</p>
+        </li>
+        <li class="point">
+          <a class="figure-link image-stage" href="../images/classic-mac-app.png" target="_blank" rel="noopener" aria-label="Open full-size image: ClarisWorks running.">
+            <img src="../images/classic-mac-app.png" width="728" height="581" alt="ClarisWorks running in HyperZebra, with “ClarisWorks on HyperZebra” in a word-processing document." loading="lazy" decoding="async">
+          </a>
+          <h3>Run classic Mac applications</h3>
+          <p>Run 68K and PowerPC applications made for Mac OS 9 and earlier. No Mac ROM or Mac OS installation is needed.</p>
+        </li>
+        <li class="point">
+          <a class="figure-link image-stage" href="../images/3d-mac-game.png" target="_blank" rel="noopener" aria-label="Open full-size image: A 3D game running.">
+            <img src="../images/3d-mac-game.png" width="686" height="526" alt="A 3D game running in HyperZebra, showing grass and cliffs, a character in the center, a map, and a score." loading="lazy" decoding="async">
+          </a>
+          <h3>Play 3D games too</h3>
+          <p>Games that use QuickDraw 3D or OpenGL run as well. Screen size, color depth, and speed can be set for each application.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section" id="start" aria-labelledby="heading-start">
+      <h2 id="heading-start">Getting started</h2>
+      <ol class="steps">
+        <li><strong>Download</strong>Get the file for your OS from <a href="https://github.com/pgostation/HyperZebra/releases">GitHub Releases</a> and extract it.</li>
+        <li><strong>Open a file</strong>Drop a stack or an application onto the launcher that appears when HyperZebra starts.</li>
+        <li><strong>Keep working</strong>An imported stack is saved as a <code>.hzb</code> file beside the original.</li>
+      </ol>
+    </section>
+
+    <section class="section faq" id="faq" aria-labelledby="heading-faq">
+      <h2 id="heading-faq">Frequently asked questions</h2>
+      <p class="section-lead">The details and things to watch out for are here. Select a question to read its answer.</p>
+      <nav class="faq-topics" aria-label="FAQ topics"><a href="#faq-basics">Basics</a><a href="#faq-hypercard">HyperCard stacks</a><a href="#faq-mac">Classic Mac applications</a><a href="#faq-development">Development</a></nav>
+
+      <div class="faq-group" id="faq-basics"><h3>Basics</h3>
+<details class="faq-item" id="faq-hypercard-what"><summary>What is this?</summary><div class="faq-answer"><p>It combines an environment for importing, browsing, editing, and running HyperCard stacks with a compatibility environment for running classic Mac applications.</p></div></details>
+<details class="faq-item" id="faq-hypercard-platforms"><summary>Which operating systems can I use?</summary><div class="faq-answer"><p>macOS (Apple silicon and Intel), Windows (64-bit), Linux, and other systems that run Java. The macOS and Windows packages include a Java runtime, so no separate Java installation is needed. On Linux and other systems, use the jar package with Java 17 or later.</p></div></details>
+<details class="faq-item" id="faq-hypercard-free"><summary>Is it free to use?</summary><div class="faq-answer"><p>Yes. HyperZebra is free to download and use. Its source code is published on <a href="https://github.com/pgostation/HyperZebra">GitHub</a> under the MIT License. Stacks and classic Mac applications have their own terms of use and distribution.</p></div></details>
+<details class="faq-item" id="faq-launcher"><summary>How do I open files?</summary><div class="faq-answer"><p>HyperZebra starts with a launcher. Choose “Open File…” or drop a stack or an application onto the window. You can reopen files from the history and add frequently used ones to the dock at the bottom.</p></div></details>
+<details class="faq-item" id="faq-languages"><summary>Can I change the language or the display size?</summary><div class="faq-answer"><p>Choose the interface language in the settings: English, Japanese, German, French, Spanish, Italian, Portuguese, Korean, and Simplified or Traditional Chinese. Cards and application screens can also be zoomed.</p></div></details>
+<details class="faq-item" id="faq-help"><summary>Is there detailed documentation?</summary><div class="faq-answer"><p>“HyperZebra Help,” available from the launcher’s Help menu, explains stack import, editing, the HyperTalk extensions, and the Mac application compatibility environment in English and Japanese.</p></div></details>
+<details class="faq-item" id="faq-hypercard-resources"><summary>What should I watch out for when moving old Mac files?</summary><div class="faq-answer"><p>Some classic Mac files have a resource fork that holds program code, pictures, sounds, or other information separately from the regular data. Preserve it when moving files, including to Windows or Linux. Without it, a file may fail to open or some of its contents may be missing.</p><p>HyperZebra supports MacBinary, BinHex, and resource information stored in <code>._filename</code> sidecar files.</p></div></details>
+      </div>
+
+      <div class="faq-group" id="faq-hypercard"><h3>HyperCard stacks</h3>
+<details class="faq-item" id="faq-hypercard-import"><summary>Can I open HyperCard stacks I made years ago?</summary><div class="faq-answer"><p>You can import HyperCard-format stacks, display their cards and pictures, and edit them. Japanese and other non-English stacks are read with their text encoding detected. HyperTalk and external commands (XCMDs and XFCNs) are supported, but compatibility is not complete and depends on the features a stack uses.</p></div></details>
+<details class="faq-item" id="faq-hypercard-save"><summary>How are edited stacks saved?</summary><div class="faq-answer"><p>When you open a HyperCard stack, it is converted into a HyperZebra stack and saved as a single <code>.hzb</code> file beside the original. Open that file for later work. It opens with a double-click and can be copied or sent like any other document. <code>.hzb</code> files made by earlier versions still open.</p><p>You can also export in HyperCard format, but HyperZebra-only features such as color do not carry over. Keep both the original stack and the working <code>.hzb</code> file.</p></div></details>
+<details class="faq-item" id="faq-hypercard-features"><summary>Are there features that HyperCard did not have?</summary><div class="faq-answer"><ul><li>Color painting with layers</li><li>Editable shapes such as rectangles, ellipses, polygons, curves, and text, with color, gradients, opacity, and rotation; SVG files can be imported as shapes</li><li>Panels, which group parts and can hold their own data and scripts</li><li>Fields that show their contents as tables or outlines</li><li>HyperTalk arrays and dictionaries, web text retrieval, JSON, and regular expressions</li><li>A resource editor for icons, cursors, sounds, and other resources</li></ul></div></details>
+<details class="faq-item" id="faq-hypertalk"><summary>Can I write and debug scripts?</summary><div class="faq-answer"><p>The script editor points out errors as you type, includes a command and function reference, and has a debugger that can pause execution and inspect variables. Stepping through a script helps connect each statement to what happens on screen.</p></div></details>
 <details class="faq-item" id="faq-hypercard-create"><summary>What can I make?</summary><div class="faq-answer"><p>You can make picture books, quizzes, and simple games. There is no feature for turning a stack into a standalone application or exporting it to the web.</p></div></details>
-<details class="faq-item" id="faq-hypercard-import"><summary>Can I open HyperCard stacks I made years ago?</summary><div class="faq-answer"><p>You can import HyperCard-format stacks, display their cards and pictures, and edit them. HyperTalk and external commands are supported, but compatibility is not complete and depends on the features a stack uses.</p></div></details>
-<details class="faq-item" id="faq-hypercard-features"><summary>Are there features that HyperCard did not have?</summary><div class="faq-answer"><p>HyperZebra adds color painting, editable shapes, gradients, and SVG import. It also includes panels for grouping elements, table and outline fields for displaying data, JSON, and regular expressions.</p></div></details>
-<details class="faq-item" id="faq-hypercard-save"><summary>How are edited stacks saved?</summary><div class="faq-answer"><p>HyperZebra saves a stack as a single <code>.hzb</code> file that opens with a double-click and can be copied or sent like any other document. <code>.hzb</code> folders made by earlier versions still open. You can also export in HyperCard format, but HyperZebra-specific features such as its color features do not carry over. Keep both the original stack and the working <code>.hzb</code> file.</p></div></details>
-<details class="faq-item" id="faq-hypercard-resources"><summary>What should I watch out for when moving old files?</summary><div class="faq-answer"><p>Classic Mac files may contain a resource fork that holds pictures, sounds, and other information separately from the regular data. Preserve it when moving files. Without it, a file may fail to open or some of its contents may be missing.</p></div></details>
-<details class="faq-item" id="faq-hypercard-platforms"><summary>Which operating systems can I use?</summary><div class="faq-answer"><p>HyperZebra is a Java application for macOS, Windows, and Linux. Application packages that include a Java runtime do not require a separate Java installation.</p></div></details>
-<details class="faq-item" id="faq-hypercard-free"><summary>Is it free to use?</summary><div class="faq-answer"><p>HyperZebra itself is free to use and is released under the MIT License. Stacks and classic Mac applications have their own terms of use and distribution.</p></div></details>
-</div>
-<div class="faq-group" id="faq-mac"><h3>The Mac compatibility layer</h3>
-<details class="faq-item" id="faq-mac-purpose"><summary>What does the Mac compatibility layer do?</summary><div class="faq-answer"><p>It runs supported applications made for classic Mac OS on a present-day computer. HyperZebra provides the Mac services these applications use, including windows, menus, drawing, sound, and file operations, on the host operating system.</p></div></details>
-<details class="faq-item" id="faq-mac-version"><summary>Which OS version is running?</summary><div class="faq-answer"><p>Classic Mac OS itself is not running. To accommodate software that checks the OS version, HyperZebra reports “9.2.2,” the final version of Mac OS 9, when applications ask. This is a compatibility response; it does not mean that Mac OS 9.2.2 has been booted.</p></div></details>
-<details class="faq-item" id="faq-mac-supported"><summary>What kinds of applications can run?</summary><div class="faq-answer"><p>The compatibility layer targets 68K and PowerPC applications made for Mac OS 9 and earlier versions of Mac OS. Actual compatibility depends on the application version and the features it uses.</p></div></details>
-<details class="faq-item" id="faq-mac-unsupported"><summary>What does not run?</summary><div class="faq-answer"><p>Applications that require Mac OS X do not run. Many system extensions also cannot run because of how they interact with the system.</p></div></details>
-<details class="faq-item" id="faq-mac-mechanism"><summary>How does it work?</summary><div class="faq-answer"><p>HyperZebra emulates 68K and PowerPC CPU instructions and handles the Mac Toolbox and system-library calls made by applications. The compatibility environment combines CPU emulation with implementations of the Mac services applications need.</p></div></details>
+      </div>
+
+      <div class="faq-group" id="faq-mac"><h3>Classic Mac applications</h3>
+<details class="faq-item" id="faq-mac-mechanism"><summary>How does it work?</summary><div class="faq-answer"><p>HyperZebra emulates 68K and PowerPC CPU instructions and handles the Mac Toolbox and system-library calls that applications make (windows, menus, drawing, sound, file operations, and more) on the host OS. Unlike conventional Mac emulators, it does not boot a complete classic Mac OS.</p></div></details>
 <details class="faq-item" id="faq-mac-rom"><summary>Do I need a Mac ROM or a classic Mac OS installation?</summary><div class="faq-answer"><p>No. HyperZebra provides the Mac services needed to run applications without booting a complete classic Mac OS installation. Some applications may still require additional extensions or libraries.</p></div></details>
-<details class="faq-item" id="faq-mac-launch"><summary>How do I launch an application?</summary><div class="faq-answer"><p>Open its file from the launcher or drag and drop it onto the launcher. You can reopen applications from the history and register them in the dock.</p></div></details>
-<details class="faq-item" id="faq-mac-limits"><summary>Does every classic Mac application work?</summary><div class="faq-answer"><p>Compatibility varies with the application, its version, and the features used. Applications that require unsupported system services or direct hardware access may have problems starting, displaying content, or responding to input. Even when an application starts, features such as editing and saving need to be checked individually.</p></div></details>
-<details class="faq-item" id="faq-mac-clipboard"><summary>Can I copy and paste text and pictures to and from my computer?</summary><div class="faq-answer"><p>Text and pictures can be exchanged through the host OS clipboard. Supported text and image files can also be converted, with settings for saving UTF-8 text and PNG images. Application-specific document formats depend on the application.</p></div></details>
-<details class="faq-item" id="faq-mac-files"><summary>Can I simply copy an old application’s files?</summary><div class="faq-answer"><p>Some classic Mac files require a resource fork containing program code, pictures, or other data. Preserve it when copying files, including when moving them to Windows or Linux. HyperZebra supports MacBinary and resource information stored in <code>._filename</code> sidecar files.</p></div></details>
-<details class="faq-item" id="faq-mac-disks"><summary>Can I open disk images of old floppies and CDs?</summary><div class="faq-answer"><p>You can open supported disk images, including Disk Copy formats and HFS, HFS Plus, and MFS volumes. Applications can access their contents as read-only disks. Extract the contents to a folder if you need to modify them.</p></div></details>
-<details class="faq-item" id="faq-mac-extensions"><summary>Can I use extensions and control panels?</summary><div class="faq-answer"><p>Some supported extensions and control panels can be used. HyperZebra has a virtual “System Folder” for extensions and preference files. Whether a particular component works depends on the system services it requires.</p></div></details>
-<details class="faq-item" id="faq-mac-fonts"><summary>Can I add fonts?</summary><div class="faq-answer"><p>Yes. Place supported classic Mac font suitcases in the “Fonts” folder inside the virtual “System Folder.” Bitmap fonts and TrueType fonts contained in suitcases are supported. Preserve the resource forks when copying old fonts.</p></div></details>
+<details class="faq-item" id="faq-mac-supported"><summary>What kinds of applications can run?</summary><div class="faq-answer"><p>The compatibility layer targets 68K and PowerPC applications made for Mac OS 9 and earlier. Compatibility varies with the application, its version, and the features used. Applications that require unsupported system services or direct hardware access may have problems starting, displaying content, or responding to input. Even when an application starts, check features such as editing and saving individually.</p></div></details>
+<details class="faq-item" id="faq-mac-unsupported"><summary>What does not run?</summary><div class="faq-answer"><p>Applications that require Mac OS X do not run. Many system extensions also cannot run because of how they interact with the system.</p></div></details>
+<details class="faq-item" id="faq-mac-version"><summary>Which OS version is running?</summary><div class="faq-answer"><p>Classic Mac OS itself is not running. To accommodate software that checks the OS version, HyperZebra reports “9.2.2,” the final version of Mac OS 9, when applications ask. This is a compatibility response; it does not mean that Mac OS 9.2.2 has been booted.</p></div></details>
 <details class="faq-item" id="faq-mac-display"><summary>What if the display is too small, colors look wrong, or an application runs too fast?</summary><div class="faq-answer"><p>Use Application Settings to adjust screen size, color depth, zoom, and execution speed. Settings are saved per application, so games and productivity applications can use different configurations. Restart an application after changing settings that take effect at launch.</p></div></details>
 <details class="faq-item" id="faq-mac-3d"><summary>Are 3D games supported?</summary><div class="faq-answer"><p>HyperZebra includes compatibility implementations of QuickDraw 3D, RAVE, and OpenGL 1.2.1 for classic Mac 3D games that use them. Rendering is performed in software inside HyperZebra. Compatibility and speed depend on the game’s features and the performance of the host computer.</p></div></details>
+<details class="faq-item" id="faq-mac-movies"><summary>Can movies be played?</summary><div class="faq-answer"><p>Movie playback depends on the format. Some movies use built-in decoders; others use FFmpeg on the host OS or QuickTime (version 4 and earlier) inside the compatibility environment. See the application’s help for details.</p></div></details>
+<details class="faq-item" id="faq-mac-clipboard"><summary>Can I copy and paste text and pictures to and from my computer?</summary><div class="faq-answer"><p>Text and pictures can be exchanged through the host OS clipboard. Supported text and image files can also be converted, with settings for saving UTF-8 text and PNG images. Application-specific document formats depend on the application.</p></div></details>
+<details class="faq-item" id="faq-mac-disks"><summary>Can I open disk images of old floppies and CDs?</summary><div class="faq-answer"><p>You can open supported disk images, including Disk Copy formats and HFS, HFS Plus, MFS, and ISO volumes. Applications can access their contents as read-only disks. Extract the contents to a folder if you need to modify them.</p></div></details>
+<details class="faq-item" id="faq-mac-archives"><summary>Can I open StuffIt and other archives?</summary><div class="faq-answer"><p>Drop a StuffIt, Compact Pro, or LHA archive onto the launcher, and HyperZebra expands it by running a classic expander application, included with HyperZebra, inside the compatibility environment.</p></div></details>
+<details class="faq-item" id="faq-mac-extensions"><summary>Can I use extensions and control panels?</summary><div class="faq-answer"><p>Some supported extensions and control panels can be used. HyperZebra has a virtual “System Folder” for extensions and preference files. Whether a particular component works depends on the system services it requires.</p></div></details>
+<details class="faq-item" id="faq-mac-fonts"><summary>Can I add fonts?</summary><div class="faq-answer"><p>Yes. Place supported classic Mac font suitcases in the “Fonts” folder inside the virtual “System Folder.” Bitmap fonts and TrueType fonts contained in suitcases are supported. Preserve the resource forks when copying old fonts.</p></div></details>
 <details class="faq-item" id="faq-mac-appearance"><summary>Can I change the appearance?</summary><div class="faq-answer"><p>You can change the appearance of windows, scrollbars, and buttons with Kaleidoscope.</p></div></details>
-<div class="note"><p>Movie playback depends on the format. Some movies use built-in decoders; others use FFmpeg on the host OS or QuickTime (~ver.4) inside the compatibility environment. See the application’s help for details.</p></div>
-</div>
-<div class="faq-group" id="faq-development"><h3>Development</h3>
+      </div>
+
+      <div class="faq-group" id="faq-development"><h3>Development</h3>
 <details class="faq-item" id="faq-development-history"><summary>How was HyperZebra developed?</summary><div class="faq-answer"><p>I started from the HyperCard clone I had been developing around 2012 and asked AI to continue its development. AI has carried out 100% of that subsequent development.</p></div></details>
 <details class="faq-item" id="faq-development-models"><summary>Which AI did you use?</summary><div class="faq-answer"><p>I started with GPT-5.6 Sol, then mainly used Opus5 and Opus5.5. I used the ChatGPT Plus and Claude Max5 plans.</p></div></details>
 <details class="faq-item" id="faq-development-process"><summary>What was your development process?</summary><div class="faq-answer"><p>I kept asking AI to implement features as I thought of them. For larger features, I mainly broke the work into pieces the AI could implement and had it work through them in order. To improve compatibility, I also had AI run a large number of HyperCard stacks and classic Mac applications.</p></div></details>
-</div>
-</section>
-<section class="article-section" id="project" aria-labelledby="heading-project"><div class="section-number">08</div><h2 id="heading-project">Project and references</h2>
-<p>HyperZebra is implemented in Java and runs on macOS, Windows, Linux, and other environments that support Java.</p>
-<p>“HyperZebra Help,” available from the launcher’s Help menu, explains stack import, editing, HyperTalk extensions, and the Mac application compatibility environment in Japanese and English.</p>
-<ul class="references">
-<li><a href="https://github.com/pgostation/HyperZebra">HyperZebra repository ↗</a><span>Source code and project documentation.</span></li>
-</ul>
-<p>The stacks and applications shown have their own authors and terms of use and distribution, separate from HyperZebra’s license.</p></section></article>
-    </div>
+<details class="faq-item" id="faq-development-source"><summary>Where is the source code?</summary><div class="faq-answer"><p>It is published in the <a href="https://github.com/pgostation/HyperZebra">GitHub repository</a> under the MIT License. HyperZebra is written in Java and builds with the JDK alone.</p></div></details>
+      </div>
+    </section>
   </main>
-  <footer class="site-footer"><div class="footer-notices"><p>HyperZebra is an unofficial compatibility environment. This project is not affiliated with Apple Inc. and is not developed, endorsed, or supported by Apple Inc.</p><p>Macintosh, HyperCard, HyperTalk, Mac, macOS, QuickDraw, and QuickTime are trademarks or registered trademarks of Apple Inc. Other product and service names are trademarks of their respective owners.</p></div><a href="#top">Back to top ↑</a></footer>
+  <footer class="site-footer"><div class="footer-notices"><p>HyperZebra is an unofficial compatibility environment. This project is not affiliated with Apple Inc. and is not developed, endorsed, or supported by Apple Inc.</p><p>The stacks and applications shown have their own authors and terms of use and distribution. Screenshots were captured on macOS.</p><p>Macintosh, HyperCard, HyperTalk, Mac, macOS, QuickDraw, and QuickTime are trademarks or registered trademarks of Apple Inc. Other product and service names are trademarks of their respective owners.</p><p><time datetime="2026-10-27">Updated October 27, 2026</time></p></div><a href="#top">Back to top ↑</a></footer>
 </div>
 </body>
 </html>
