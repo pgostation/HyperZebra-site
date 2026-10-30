@@ -78,8 +78,7 @@
       <h2 id="heading-start">Getting started</h2>
       <ol class="steps">
         <li><strong>Download</strong>Get the file for your OS from <a href="https://github.com/pgostation/HyperZebra/releases">GitHub Releases</a> and extract it.</li>
-        <li><strong>Open a file</strong>Drop a stack or an application onto the launcher that appears when HyperZebra starts.</li>
-        <li><strong>Keep working</strong>An imported stack is saved as a <code>.hzb</code> file beside the original.</li>
+        <li><strong>Open a file</strong>Drop a stack or an application onto the launcher that appears when HyperZebra starts. You can also drop archive and disk image files directly onto it.</li>
       </ol>
     </section>
 
@@ -117,15 +116,15 @@
 <details class="faq-item" id="faq-mac-movies"><summary>Can movies be played?</summary><div class="faq-answer"><p>Movie playback depends on the format. Some movies use built-in decoders; others use FFmpeg on the host OS or QuickTime (version 4 and earlier) inside the compatibility environment. See the application’s help for details.</p></div></details>
 <details class="faq-item" id="faq-mac-clipboard"><summary>Can I copy and paste text and pictures to and from my computer?</summary><div class="faq-answer"><p>Text and pictures can be exchanged through the host OS clipboard. Supported text and image files can also be converted, with settings for saving UTF-8 text and PNG images. Application-specific document formats depend on the application.</p></div></details>
 <details class="faq-item" id="faq-mac-disks"><summary>Can I open disk images of old floppies and CDs?</summary><div class="faq-answer"><p>You can open supported disk images, including Disk Copy formats and HFS, HFS Plus, MFS, and ISO volumes. Applications can access their contents as read-only disks. Extract the contents to a folder if you need to modify them.</p></div></details>
-<details class="faq-item" id="faq-mac-archives"><summary>Can I open StuffIt and other archives?</summary><div class="faq-answer"><p>Drop a StuffIt, Compact Pro, or LHA archive onto the launcher, and HyperZebra expands it by running a classic expander application, included with HyperZebra, inside the compatibility environment.</p></div></details>
+<details class="faq-item" id="faq-mac-archives"><summary>Can I open StuffIt and other archives?</summary><div class="faq-answer"><p>Drop a StuffIt, Compact Pro, or LHA archive onto the launcher. HyperZebra then runs a classic expander application from its download package inside the compatibility environment to extract the archive.</p></div></details>
 <details class="faq-item" id="faq-mac-extensions"><summary>Can I use extensions and control panels?</summary><div class="faq-answer"><p>Some supported extensions and control panels can be used. HyperZebra has a virtual “System Folder” for extensions and preference files. Whether a particular component works depends on the system services it requires.</p></div></details>
 <details class="faq-item" id="faq-mac-fonts"><summary>Can I add fonts?</summary><div class="faq-answer"><p>Yes. Place supported classic Mac font suitcases in the “Fonts” folder inside the virtual “System Folder.” Bitmap fonts and TrueType fonts contained in suitcases are supported. Preserve the resource forks when copying old fonts.</p></div></details>
 <details class="faq-item" id="faq-mac-appearance"><summary>Can I change the appearance?</summary><div class="faq-answer"><p>You can change the appearance of windows, scrollbars, and buttons with Kaleidoscope.</p></div></details>
       </div>
 
       <div class="faq-group" id="faq-development"><h3>Development</h3>
-<details class="faq-item" id="faq-development-history"><summary>How was HyperZebra developed?</summary><div class="faq-answer"><p>I started from the HyperCard clone I had been developing around 2012 and asked AI to continue its development. AI has carried out 100% of that subsequent development.</p></div></details>
-<details class="faq-item" id="faq-development-models"><summary>Which AI did you use?</summary><div class="faq-answer"><p>I started with GPT-5.6 Sol, then mainly used Opus5 and Opus5.5. I used the ChatGPT Plus and Claude Max5 plans.</p></div></details>
+<details class="faq-item" id="faq-development-history"><summary>How was HyperZebra developed?</summary><div class="faq-answer"><p>I started from the HyperCard clone I had been developing around 2012 and asked AI to continue its development. Most of the current core features were developed by AI.</p></div></details>
+<details class="faq-item" id="faq-development-models"><summary>Which AI did you use?</summary><div class="faq-answer"><p>I started with GPT-5.6 Sol, then mainly used Opus 5 and Opus 5.5.</p></div></details>
 <details class="faq-item" id="faq-development-process"><summary>What was your development process?</summary><div class="faq-answer"><p>I kept asking AI to implement features as I thought of them. For larger features, I mainly broke the work into pieces the AI could implement and had it work through them in order. To improve compatibility, I also had AI run a large number of HyperCard stacks and classic Mac applications.</p></div></details>
 <details class="faq-item" id="faq-development-source"><summary>Where is the source code?</summary><div class="faq-answer"><p>It is published in the <a href="https://github.com/pgostation/HyperZebra">GitHub repository</a> under the MIT License. HyperZebra is written in Java and builds with the JDK alone.</p></div></details>
       </div>
