@@ -1,0 +1,9 @@
+de
+es
+fr
+it
+ja
+ko
+pt
+zh-Hans
+zh-Hant

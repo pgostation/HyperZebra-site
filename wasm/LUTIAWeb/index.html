@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="en" data-stack="LUTIA 1.6.hzb" data-wasm="player-68k.wasm" data-gamepad="left,right,z,x">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HyperZebra Player</title>
+<style>
+  :root {
+    --bg: #e8e9ec; --bg-deep: #dcdee2; --fg: #1d1d1f; --muted: #6e6e73; --panel: #ffffff; --panel-2: #f5f5f7;
+    --line: rgba(0, 0, 0, 0.14); --frame: rgba(0, 0, 0, 0.32); --accent: #0a64d8; --on-accent: #ffffff; --error: #b3261e;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.08); --menu-shadow: 0 10px 28px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.1);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #1b1c1f; --bg-deep: #121315; --fg: #f2f2f4; --muted: #9a9aa2; --panel: #26272b; --panel-2: #2f3035;
+    --line: rgba(255, 255, 255, 0.12); --frame: rgba(255, 255, 255, 0.2); --accent: #4c8dff; --on-accent: #ffffff; --error: #ff8a80;
+    --shadow: 0 14px 36px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4); --menu-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
+    color-scheme: dark;
+  } }
+  :root[data-theme="dark"] {
+    --bg: #1b1c1f; --bg-deep: #121315; --fg: #f2f2f4; --muted: #9a9aa2; --panel: #26272b; --panel-2: #2f3035;
+    --line: rgba(255, 255, 255, 0.12); --frame: rgba(255, 255, 255, 0.2); --accent: #4c8dff; --on-accent: #ffffff; --error: #ff8a80;
+    --shadow: 0 14px 36px rgba(0, 0, 0, 0.55), 0 2px 6px rgba(0, 0, 0, 0.4); --menu-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
+    color-scheme: dark;
+  }
+  html, body { height: 100%; }
+  body { margin: 0; background: radial-gradient(ellipse at 50% 30%, var(--bg) 0%, var(--bg-deep) 100%) fixed; color: var(--fg);
+    font: 14px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif; }
+  /* the stage: the screen (menu bar and card) in the middle of the window, the message box and a line for errors under it
+     (fit() sizes the card to what is left: the PAD around it) */
+  #stage { min-height: 100%; box-sizing: border-box; padding: 16px; display: flex; align-items: center; justify-content: center; }
+  #wrap { max-width: 100%; width: max-content; }
+  #screen { position: relative; background: var(--panel); border: 1px solid var(--frame); box-shadow: var(--shadow); }
+  #loading { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(280px, calc(100vw - 64px)); padding: 16px 18px;
+    background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--menu-shadow); font-size: 13px; text-align: center; }
+  #loading[hidden] { display: none; }
+  #loadbar { height: 6px; border-radius: 3px; margin-top: 10px; overflow: hidden; background: var(--panel-2); }
+  #loadfill { height: 100%; width: 0; border-radius: 3px; background: var(--accent); transition: width 0.15s linear; }
+  #loadbar.busy #loadfill { width: 30%; animation: hzbusy 1.1s ease-in-out infinite alternate; }
+  @keyframes hzbusy { from { margin-left: 0; } to { margin-left: 70%; } }
+  #loadstart { font: inherit; font-weight: 600; margin-top: 10px; padding: 7px 18px; border: 0; border-radius: 8px; background: var(--accent); color: var(--on-accent); cursor: pointer; }
+  #loadstart[hidden] { display: none; }
+  #loadstart:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { #loadbar.busy #loadfill { animation: none; width: 100%; opacity: 0.5; } }
+  #menubar { display: flex; flex-wrap: wrap; align-items: center; gap: 2px; padding: 2px 6px; background: var(--panel); border-bottom: 1px solid var(--frame);
+    font-size: 13px; line-height: 1.2; position: relative; user-select: none; -webkit-user-select: none; }
+  #menubar[hidden] { display: none; }
+  /* a script is running: its choices would be dropped (PlayerLoop), as HyperCard's menus do nothing then */
+  #menubar.busy > button { color: var(--muted); opacity: 0.55; }
+  #menubar.busy > button:hover { background: none; }
+  #menubar > button { font: inherit; font-weight: 500; color: var(--fg); background: none; border: 0; border-radius: 5px; padding: 3px 9px; cursor: default; }
+  #menubar > button:hover { background: var(--panel-2); }
+  #menubar > button[aria-expanded="true"] { background: var(--accent); color: var(--on-accent); }
+  #menubar > button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .menu { position: absolute; z-index: 10; min-width: 200px; max-width: min(340px, calc(100vw - 40px)); max-height: 70vh; overflow-y: auto; margin-top: 3px;
+    background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--menu-shadow); padding: 4px; }
+  .menu button { display: flex; width: 100%; gap: 16px; justify-content: space-between; font: inherit; color: inherit; background: none; border: 0;
+    border-radius: 5px; padding: 4px 10px 4px 24px; text-align: left; position: relative; }
+  .menu button:disabled { color: var(--muted); opacity: 0.7; }
+  .menu button:not(:disabled):hover, .menu button:not(:disabled):focus { background: var(--accent); color: var(--on-accent); outline: none; }
+  .menu button .check { position: absolute; left: 8px; }
+  .menu button .key { color: inherit; opacity: 0.6; font-variant-numeric: tabular-nums; }
+  .menu.popup { position: fixed; z-index: 30; margin-top: 2px; max-height: min(70vh, 420px); }
+  .menu hr { border: 0; border-top: 1px solid var(--line); margin: 4px 6px; }
+  /* the card as large as the window lets it (fit() sets its size; the worker draws it at the screen's pixels) */
+  #card { display: block; image-rendering: pixelated; outline: none; background: #fff; touch-action: none; }
+  #card:focus-visible { box-shadow: 0 0 0 2px var(--accent); }
+  #msgwrap { position: relative; }
+  #msgover { position: absolute; left: 0; top: 10px; width: 100%; height: calc(100% - 10px); pointer-events: none; image-rendering: pixelated; display: none; border-radius: 8px; }
+  #msgbox { display: none; margin-top: 10px; width: 100%; box-sizing: border-box; font: 13px Geneva, "Hiragino Sans", Helvetica, sans-serif; padding: 6px 10px;
+    border: 1px solid var(--frame); border-radius: 8px; background: var(--panel); color: var(--fg); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06); }
+  #msgbox:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  /* only what went wrong (the stack did not load, the player stopped) */
+  #status { margin: 8px 0 0; color: var(--error); font: 12px/1.4 ui-monospace, Menlo, monospace; white-space: pre-wrap; max-height: 30vh; overflow: auto; }
+  #status:empty { display: none; }
+  dialog { border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--menu-shadow); padding: 18px 20px 16px; max-width: min(440px, calc(100vw - 48px));
+    font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", system-ui, sans-serif; color: var(--fg); background: var(--panel); }
+  dialog::backdrop { background: rgba(0, 0, 0, 0.18); }
+  dialog p { white-space: pre-wrap; margin: 0 0 14px; }
+  dialog input { width: 100%; box-sizing: border-box; margin-bottom: 14px; font: inherit; padding: 6px 8px; border: 1px solid var(--frame); border-radius: 6px; background: var(--panel); color: var(--fg); }
+  dialog input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  dialog input[type=color] { height: 44px; padding: 3px; cursor: pointer; }
+  dialog select { display: block; width: 100%; min-width: 260px; box-sizing: border-box; margin-bottom: 14px; font: inherit; padding: 4px; border: 1px solid var(--frame); border-radius: 6px; background: var(--panel); color: var(--fg); }
+  dialog .buttons .left { margin-right: auto; }
+  dialog .buttons { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+  dialog button { font: inherit; min-width: 72px; padding: 5px 14px; border: 1px solid var(--frame); border-radius: 7px; background: var(--panel-2); color: var(--fg); }
+  dialog button:hover { filter: brightness(0.97); }
+  dialog button.default { background: var(--accent); border-color: var(--accent); color: var(--on-accent); font-weight: 600; }
+  dialog button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* Button Info / Field Info (PartInfo): changes go into the part at once, one Close button */
+  #info { min-width: min(360px, calc(100vw - 48px)); }
+  #info h2 { font-size: 14px; font-weight: 600; margin: 0 0 12px; }
+  #info label.row { display: grid; grid-template-columns: max-content 1fr; align-items: center; gap: 8px; margin-bottom: 10px; }
+  #info label.row input, #info select { margin: 0; width: 100%; box-sizing: border-box; font: inherit; padding: 5px 8px; border: 1px solid var(--frame);
+    border-radius: 6px; background: var(--panel); color: var(--fg); }
+  #info .facts { color: var(--muted); font-size: 12px; margin: -2px 0 10px; }
+  #info .facts div { white-space: pre-wrap; }
+  #info .checks { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; margin: 4px 0 16px; }
+  #info .checks label { display: flex; align-items: center; gap: 6px; }
+  #info .checks input { width: auto; margin: 0; }
+  /* the virtual game pad (a phone has no keyboard): the d-pad at the left, the stack's other keys at the right, under the
+     card when the screen stands, beside it when it lies (fit() leaves it that room) */
+  #pad { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; display: flex; justify-content: space-between; align-items: flex-end;
+    box-sizing: border-box; padding: 12px max(16px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    pointer-events: none; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
+    --pad: min(40vw, 172px); --btn: min(17vw, 66px); }
+  #pad[hidden] { display: none; }
+  #pad.landscape { top: 0; --pad: min(40vh, 156px); --btn: min(16vh, 60px); padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+  #pad .dpad, #pad .padbtn, #padtoggle { pointer-events: auto; }
+  #pad.off .dpad, #pad.off .padbtns { visibility: hidden; }
+  #pad .dpad { position: relative; width: var(--pad); height: var(--pad); border-radius: 50%; flex: none;
+    background: color-mix(in srgb, var(--panel) 82%, transparent); border: 1px solid var(--frame); box-shadow: var(--menu-shadow); }
+  #pad .dpad .arm { position: absolute; display: flex; align-items: center; justify-content: center; color: var(--muted);
+    font-size: calc(var(--pad) * 0.13); background: var(--panel-2); border: 1px solid var(--line); box-sizing: border-box; }
+  #pad .dpad .arm.up { left: 34%; right: 34%; top: 6%; height: 34%; border-radius: 10px 10px 4px 4px; }
+  #pad .dpad .arm.down { left: 34%; right: 34%; bottom: 6%; height: 34%; border-radius: 4px 4px 10px 10px; }
+  #pad .dpad .arm.left { top: 34%; bottom: 34%; left: 6%; width: 34%; border-radius: 10px 4px 4px 10px; }
+  #pad .dpad .arm.right { top: 34%; bottom: 34%; right: 6%; width: 34%; border-radius: 4px 10px 10px 4px; }
+  #pad .dpad .arm.unused { opacity: 0.3; }
+  #pad .dpad .arm.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+  /* (from the left in gamepadKeys' order: the most used, then as the key strings name them: CarChaser's "^op^cm" steers left, right; rows fill from the bottom) */
+  #pad .padbtns { display: flex; flex-wrap: wrap-reverse; justify-content: flex-end; align-content: flex-start;
+    gap: 10px; max-width: calc(var(--btn) * 3 + 20px); flex: none; }
+  #pad.landscape .padbtns { max-width: calc(var(--btn) * 2 + 10px); }
+  #pad .padbtn { width: var(--btn); height: var(--btn); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font: 600 calc(var(--btn) * 0.32)/1 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; color: var(--fg);
+    background: color-mix(in srgb, var(--panel) 86%, transparent); border: 1px solid var(--frame); box-shadow: var(--menu-shadow); box-sizing: border-box; }
+  #pad .padbtn small { font-size: calc(var(--btn) * 0.17); font-weight: 500; color: var(--muted); margin-top: 2px; }
+  #pad .padbtn.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); transform: scale(0.95); }
+  #pad .padbtn.on small { color: var(--on-accent); }
+  #padtoggle { position: fixed; z-index: 6; left: 50%; bottom: max(10px, env(safe-area-inset-bottom)); transform: translateX(-50%); width: 36px; height: 28px;
+    border-radius: 14px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 80%, transparent); color: var(--muted);
+    display: flex; align-items: center; justify-content: center; padding: 0; touch-action: manipulation; }
+  #pad.landscape + #padtoggle { left: auto; right: max(12px, env(safe-area-inset-right)); top: max(10px, env(safe-area-inset-top)); bottom: auto; transform: none; }
+  #padtoggle[hidden] { display: none; }
+  #padtoggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  #padtoggle svg { width: 20px; height: 20px; }
+</style>
+</head>
+<body>
+<main id="stage"><div id="wrap">
+  <div id="screen">
+    <nav id="menubar" aria-label="Stack menus" hidden></nav>
+    <canvas id="card" width="512" height="342" tabindex="0"></canvas>
+    <div id="loading" role="status" aria-live="polite"><div id="loadtext">Loading…</div><div id="loadbar" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div id="loadfill"></div></div><button id="loadstart" type="button" hidden>Click to start</button></div>
+  </div>
+  <div id="msgwrap"><input id="msgbox" type="text" spellcheck="false" autocomplete="off" aria-label="Message box"><canvas id="msgover" aria-hidden="true"></canvas></div>
+  <pre id="status" role="alert"></pre>
+</div></main>
+<div id="pad" hidden aria-label="Game pad"></div>
+<button id="padtoggle" type="button" hidden aria-label="Hide the game pad" title="Game pad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M7 7h10a5 5 0 0 1 4.6 7l-1 2.4a2.6 2.6 0 0 1-4.4.6L14.5 15h-5l-1.7 2a2.6 2.6 0 0 1-4.4-.6l-1-2.4A5 5 0 0 1 7 7z"/><path d="M8 10v3M6.5 11.5h3"/><circle cx="15.5" cy="10.5" r=".6" fill="currentColor"/><circle cx="17.5" cy="12.5" r=".6" fill="currentColor"/></svg></button>
+<dialog id="dialog"><p id="dprompt"></p><input id="dinput" type="text"><select id="dlist" size="8" aria-label="Files"></select><input id="dfile" type="file" hidden><div class="buttons" id="dbuttons"></div></dialog>
+<dialog id="info" aria-labelledby="infotitle"></dialog>
+<script src="player.js"></script>
+<script>
+(async () => {
+  const status = document.getElementById("status"), msgbox = document.getElementById("msgbox"), msgover = document.getElementById("msgover");
+  // what a 68K external drew in the message box (UxFlashMsg's flash, UxMsgBar's bar): over the page's box, stretched to it
+  let msgOverlayOn = false;
+  window.hzMsgOverlays = 0;
+  function msgOverlay(m) {
+    msgOverlayOn = !!m.data; if (m.data) window.hzMsgOverlays++;
+    if (!m.data) { msgover.style.display = "none"; return; }
+    msgover.width = m.w; msgover.height = m.h;
+    const c = msgover.getContext("2d"), img = c.createImageData(m.w, m.h), d = img.data;
+    for (let i = 0, j = 0; i < m.data.length; i++, j += 4) { const p = m.data[i]; d[j] = (p >> 16) & 255; d[j + 1] = (p >> 8) & 255; d[j + 2] = p & 255; d[j + 3] = (p >>> 24) & 255; }
+    c.putImageData(img, 0, 0);
+    msgover.style.display = msgbox.style.display === "block" ? "block" : "none";
+  }
+  // the line under the card: only what went wrong (the card is fitted again round it)
+  let refitHook = null;
+  const show = s => { status.textContent = s; window.hzStatus = s; if (refitHook) refitHook(); };
+  // loading: one bar for everything the page downloads (the stack, the files beside it, the player), then "Starting…" while
+  // the browser compiles the player, until the first frame
+  const loading = document.getElementById("loading"), loadtext = document.getElementById("loadtext"), loadbar = document.getElementById("loadbar"), loadfill = document.getElementById("loadfill");
+  const mb = (n) => (n / 1048576).toFixed(n < 10485760 ? 1 : 0);
+  function progress(got, total) {
+    const known = total > 0 && got <= total;
+    loadbar.classList.toggle("busy", !known);
+    if (known) { const pc = Math.round(got * 100 / total); loadfill.style.width = pc + "%"; loadbar.setAttribute("aria-valuenow", pc); }
+    else loadbar.removeAttribute("aria-valuenow");
+    loadtext.textContent = known ? "Loading… " + mb(got) + " of " + mb(total) + " MB" : "Loading… " + mb(got) + " MB";
+  }
+  function starting() { loadbar.classList.add("busy"); loadbar.removeAttribute("aria-valuenow"); loadtext.textContent = "Starting…"; }
+  function loaded() { loading.hidden = true; }
+  /**
+   * The files at these URLs, read with one progress bar for them all (null for one that is not there). Each body is read
+   * as soon as its response comes: a browser has only ~6 connections to a server over HTTP/1.1, and a body left unread
+   * holds its connection, so waiting for every response first never ended with many files (Cosmic Osmo: 480 files)
+   */
+  async function fetchAll(urls) {
+    let total = 0, got = 0, waiting = urls.filter((u) => u).length; // (total is known once every response has come)
+    progress(0, 0);
+    return Promise.all(urls.map(async (u) => {
+      if (!u) return null; // ("": none)
+      const r = await fetch(u).catch(() => null);
+      if (r && r.ok) total += +(r.headers.get("content-length") || 0);
+      waiting--;
+      progress(got, waiting > 0 ? 0 : total);
+      if (!r || !r.ok) return null;
+      if (!r.body) { const b = await r.arrayBuffer(); got += b.byteLength; progress(got, waiting > 0 ? 0 : total); return b; }
+      const reader = r.body.getReader(), parts = [];
+      let n = 0;
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        parts.push(value); n += value.length; got += value.length; progress(got, waiting > 0 ? 0 : total);
+      }
+      const out = new Uint8Array(n);
+      let at = 0;
+      for (const p of parts) { out.set(p, at); at += p.length; }
+      return out.buffer;
+    }));
+  }
+  const q = new URLSearchParams(location.search);
+  let args = [], stack = null, name = "", others = [];
+  if (q.has("trace")) args.push("--trace");
+  if (q.has("log")) args.push("--log");
+  // ?prop=hz68k.qttrace=true: a system property for the player (the trace switches), set before the classes that read it load
+  for (const p of q.getAll("prop")) args.push("--prop", p);
+  // the CD the stack came on, by the name its scripts give it (data-volumes: Export for Web found it): the stack's folder here
+  if (document.documentElement.dataset.volumes) args.push("--prop", "hz.player.volumes=" + document.documentElement.dataset.volumes);
+  window.hzTrace = [];
+  // the 68K player for a stack whose externals are 68K code (Export for Web names it: data-wasm), ?wasm= to choose
+  const wasm = q.get("wasm") || document.documentElement.dataset.wasm || "player.wasm";
+  // cross-origin isolation first (it may reload the page once): the files are downloaded after it, once
+  if (!(await HyperZebraPlayer.isolate())) { loaded(); show("This page needs cross-origin isolation (SharedArrayBuffer): it could not be turned on."); return; }
+  let wasmBytes = null;
+  // HyperZebra's language (its menus, its dialogs' words, the systemLang, a stack's own Languages/*.po): ?lang=, else the page's
+  // (data-lang), else the first of the browser's there is a catalog for (lang/index.txt lists them: lang/<tag>.po), else English
+  const lang = await language();
+  args.unshift("--lang", lang);
+  async function language() {
+    let tags = [];
+    try { const r = await fetch("lang/index.txt"); if (r.ok) tags = (await r.text()).split(/\s+/).filter((t) => t); } catch (e) {}
+    const asked = [q.get("lang"), document.documentElement.dataset.lang].concat(navigator.languages || [navigator.language]).filter((t) => t);
+    for (const want of asked) {
+      for (const t of chain(want.replace("_", "-"))) {
+        if (t.toLowerCase() === "en") return "en";
+        const found = tags.find((x) => x.toLowerCase() === t.toLowerCase());
+        if (found) return found;
+      }
+    }
+    return "en";
+  }
+  /** "pt-BR" -> pt-BR, pt; "zh-TW" -> zh-TW, zh-Hant, zh (International.fallbackChain) */
+  function chain(tag) {
+    const out = [];
+    for (let t = tag; t; t = t.includes("-") ? t.slice(0, t.lastIndexOf("-")) : "") out.push(t);
+    const p = tag.split("-");
+    if (p[0].toLowerCase() === "zh" && !p.some((x) => /^(Hans|Hant)$/i.test(x))) {
+      const c = (p[1] || "").toUpperCase();
+      out.splice(out.length - 1, 0, c === "TW" || c === "HK" || c === "MO" ? "zh-Hant" : "zh-Hans");
+    }
+    return out;
+  }
+  let catalog = null;
+  if (q.has("experiment")) { args = ["--experiment"]; [wasmBytes] = await fetchAll([wasm]); }
+  else {
+    // ?stack=<url>, else the file the page names (data-stack: Export for Web writes it), else stack.hzb
+    const named = document.documentElement.dataset.stack;
+    const url = q.get("stack") || (named ? encodeURIComponent(named) : "stack.hzb");
+    // the other stacks of the work, beside it (data-others: Export for Web lists them, "|" between; ?others= too)
+    const listed = (q.get("others") || document.documentElement.dataset.others || "").split("|").filter((f) => f);
+    const base = url.includes("/") ? url.slice(0, url.lastIndexOf("/") + 1) : "";
+    const files = await fetchAll([url, wasm, lang === "en" ? "" : "lang/" + lang + ".po"].concat(listed.map((file) => file.endsWith("/") ? "" : base + file.split("/").map(encodeURIComponent).join("/"))));
+    if (!files[0]) { loaded(); show("Cannot load the stack " + url); return; }
+    stack = files[0]; wasmBytes = files[1];
+    if (files[2]) catalog = { tag: lang, bytes: files[2] };
+    // ("Folder/": an empty folder the scripts name, made beside the stack)
+    listed.forEach((file, i) => { if (files[i + 3] || file.endsWith("/")) others.push({ name: file, bytes: files[i + 3] || new ArrayBuffer(0) }); });
+    name = decodeURIComponent(url.split("/").pop().split("?")[0]) || "Stack.hzb";
+    if (!/\.hzb$/i.test(name)) name += ".hzb";
+  }
+  starting();
+  // sound: one AudioContext (browsers start it only after a click or a key, so it is resumed then); the worker sends each
+  // sound's samples once ("sound") and then notes ("note": the sound, its pitch as the playback rate, its length, its loop),
+  // which follow one another without a gap; "stopSound" is play stop
+  let audio = null, nextAt = 0;
+  const buffers = new Map(), playing = new Set();
+  function ctx() {
+    if (!audio) { try { audio = new AudioContext(); } catch (e) { return null; } }
+    if (audio.state === "suspended") audio.resume().catch(() => {});
+    return audio;
+  }
+  for (const k of ["pointerdown", "keydown"]) document.addEventListener(k, () => ctx(), { capture: true });
+  function soundData(m) {
+    const a = ctx(); if (!a) return;
+    const n = Math.max(1, m.left.length), buf = a.createBuffer(m.right ? 2 : 1, n, m.rate);
+    const fill = (src, ch) => { const d = buf.getChannelData(ch); for (let i = 0; i < src.length; i++) d[i] = src[i] / 32768; };
+    fill(m.left, 0); if (m.right) fill(m.right, 1);
+    buffers.set(m.id, buf);
+  }
+  // (while the browser holds the context (no click yet, the tab in the background on a phone) sounds are dropped, not
+  // scheduled: they would all play late, one after another, once it runs)
+  const running = (a) => a && a.state === "running";
+  function note(m) {
+    const a = ctx(); if (!running(a)) return;
+    const t0 = Math.max(a.currentTime + 0.02, nextAt);
+    nextAt = t0 + m.seconds;
+    const buf = buffers.get(m.id);
+    if (!m.id || !buf) return; // a rest
+    const src = a.createBufferSource(), g = a.createGain();
+    src.buffer = buf; src.playbackRate.value = m.pitch;
+    if (m.loopEnd > m.loopStart + 1) { src.loop = true; src.loopStart = m.loopStart / buf.sampleRate; src.loopEnd = m.loopEnd / buf.sampleRate; }
+    g.gain.setValueAtTime(m.gain, t0);
+    if (src.loop || m.seconds < buf.duration / m.pitch) { // cut inside the sound: a short fade, no click
+      g.gain.setValueAtTime(m.gain, Math.max(t0, t0 + m.seconds - 0.005)); g.gain.linearRampToValueAtTime(0, t0 + m.seconds);
+    }
+    src.connect(g).connect(a.destination);
+    src.start(t0); src.stop(t0 + m.seconds + 0.01);
+    src.hzGain = g;
+    playing.add(src); src.onended = () => playing.delete(src);
+  }
+  // play stop: the note sounding now fades out over 5 ms (TSound.PlayStop: a cut in the middle of the waveform clicks), the
+  // ones waiting never start
+  function stopSound() {
+    const t = audio ? audio.currentTime : 0;
+    for (const s of playing) {
+      const g = s.hzGain && s.hzGain.gain;
+      try {
+        // (not cancelAndHoldAtTime: Chrome then still cut a looping buffer source at once)
+        if (g) { g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(0, t + 0.005); }
+        s.stop(g ? t + 0.006 : 0);
+      } catch (e) {}
+    }
+    playing.clear(); nextAt = 0;
+  }
+  // the 68K VMs' sound (P4): stretches of interleaved 16-bit stereo ("pcm"), each played right after the one before; one that
+  // comes late (the stream stopped, or the worker was held up) starts a little ahead of now
+  let streamAt = 0, streamed = 0, late = 0, peak = 0;
+  function pcm(m) {
+    const a = ctx(); if (!a) return;
+    const frames = m.data.length >> 1; if (!frames) return;
+    if (!running(a)) { streamAt = 0; return; }
+    const buf = a.createBuffer(2, frames, m.rate), l = buf.getChannelData(0), r = buf.getChannelData(1);
+    for (let i = 0, j = 0; i < frames; i++, j += 2) { l[i] = m.data[j] / 32768; r[i] = m.data[j + 1] / 32768; peak = Math.max(peak, Math.abs(m.data[j]), Math.abs(m.data[j + 1])); }
+    if (streamAt < a.currentTime + 0.01) { if (streamed) late++; streamAt = a.currentTime + 0.03; }
+    const src = a.createBufferSource(); src.buffer = buf; src.connect(a.destination); src.start(streamAt);
+    streamAt += frames / m.rate; streamed += frames;
+  }
+  window.hzSound = { buffers, playing, get nextAt() { return nextAt; }, get streamed() { return streamed; }, get late() { return late; }, get peak() { return peak; } };
+  function beep() {
+    try {
+      const a = ctx(); if (!a) return; audio = a;
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.type = "square"; o.frequency.value = 880; g.gain.value = 0.08;
+      o.connect(g); g.connect(audio.destination); o.start(); o.stop(audio.currentTime + 0.12);
+    } catch (e) {}
+  }
+  // the stack's menu bar (PlayerLoop.menuText): a list opens under its title; choosing sends doMenu to the stack
+  const bar = document.getElementById("menubar");
+  // Export for Web can leave the menu bar out (data-menubar="hidden"; ?menubar=0): the Command keys still choose its items
+  const noMenuBar = q.get("menubar") === "0" || document.documentElement.dataset.menubar === "hidden";
+  let open = null;
+  function closeMenu() { if (open) { open.list.remove(); open.button.setAttribute("aria-expanded", "false"); open = null; } }
+  function menus(text, player) {
+    closeMenu();
+    bar.textContent = "";
+    const lines = text.split("\n").filter(l => l.length);
+    bar.hidden = noMenuBar || lines.length === 0 || lines[0] === "hidden";
+    let menu = null;
+    const all = [];
+    for (const l of lines) {
+      const f = l.split("\t");
+      // (a label after the fields: the name in HyperZebra's language; choosing still sends the name)
+      if (f[0] === "M") { menu = { title: f[1], label: f[2] || f[1], items: [] }; all.push(menu); }
+      else if (menu && f[0] === "S") menu.items.push(null);
+      else if (menu && f[0] === "I") menu.items.push({ text: f[1], enabled: f[2] === "1", checked: f[3] === "1", key: f[4] || "", label: f[5] || f[1] });
+    }
+    const isMac = /Mac|iPhone|iPad/.test(navigator.platform);
+    for (const m of all) {
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = m.label; b.setAttribute("aria-haspopup", "menu"); b.setAttribute("aria-expanded", "false");
+      b.onclick = (e) => {
+        e.stopPropagation();
+        if (bar.classList.contains("busy")) return;
+        const was = open && open.button === b;
+        closeMenu();
+        if (was) return;
+        const list = document.createElement("div");
+        list.className = "menu"; list.setAttribute("role", "menu");
+        for (const it of m.items) {
+          if (!it) { list.appendChild(document.createElement("hr")); continue; }
+          const ib = document.createElement("button");
+          ib.type = "button"; ib.setAttribute("role", "menuitem"); ib.disabled = !it.enabled;
+          if (it.checked) { const c = document.createElement("span"); c.className = "check"; c.textContent = "✓"; ib.appendChild(c); }
+          const t = document.createElement("span"); t.textContent = it.label; ib.appendChild(t);
+          if (it.key) { const k = document.createElement("span"); k.className = "key"; k.textContent = (isMac ? "⌘" : "Ctrl+") + it.key; ib.appendChild(k); }
+          ib.onclick = (ev) => { ev.stopPropagation(); closeMenu(); player.modifiers(ev); player.sendText(player.EV.MENU, m.title + "\n" + it.text); player.focus(); };
+          list.appendChild(ib);
+        }
+        const r = b.getBoundingClientRect(), w = bar.getBoundingClientRect();
+        list.style.left = (r.left - w.left) + "px"; list.style.top = (r.bottom - w.top) + "px";
+        bar.appendChild(list);
+        b.setAttribute("aria-expanded", "true");
+        open = { button: b, list };
+        const first = list.querySelector("button:not(:disabled)"); if (first) first.focus();
+      };
+      bar.appendChild(b);
+    }
+  }
+  document.addEventListener("click", closeMenu);
+  // a pop-up button's menu (PlayerLoop.popupMenuText): under the button, the chosen line checked; the line picked goes back
+  // (POPUP), "0" when it closes without one. A press held and let go over a line picks it, as a click on the line does
+  let popupOpen = null;
+  function closePopup(n) {
+    if (!popupOpen) return;
+    const o = popupOpen; popupOpen = null;
+    o.list.remove();
+    document.removeEventListener("pointerdown", o.outside, true);
+    window.removeEventListener("pointerup", o.release, true);
+    document.removeEventListener("keydown", o.keys, true);
+    // (a 68K external's PopUpMenuSelect waits as a dialog: the reply is the item)
+    if (o.external) o.player.reply(n, ""); else o.player.sendText(o.player.EV.POPUP, String(n));
+    o.player.focus();
+  }
+  /** A pop-up button's menu (PlayerLoop.popupMenuText), or with external a 68K external's pop-up menu (PlayerVmHost
+   *  .popUpMenuSelect): its items "-" or flags (E/D, c checked), a tab and the text, the given item placed at the top */
+  function popup(text, player, external) {
+    closePopup(0);
+    const lines = text.split("\n");
+    const [l, t, r, b] = lines[0].split(",").map(Number);
+    const chosen = +lines[1] || 0;
+    const items = lines.slice(3);
+    const card = document.getElementById("card"), cr = card.getBoundingClientRect(), [cw, ch] = player.cardSize();
+    const sx = cr.width / cw, sy = cr.height / ch;
+    const list = document.createElement("div");
+    list.className = "menu popup"; list.setAttribute("role", "menu");
+    let atTop = null;
+    items.forEach((it, i) => {
+      if (external && it === "-") { list.appendChild(document.createElement("hr")); return; }
+      const tab = external ? it.indexOf("\t") : -1, flags = tab >= 0 ? it.substring(0, tab) : "", label = tab >= 0 ? it.substring(tab + 1) : it;
+      const checked = external ? flags.includes("c") : i + 1 === chosen;
+      const ib = document.createElement("button");
+      ib.type = "button"; ib.setAttribute("role", "menuitemradio"); ib.setAttribute("aria-checked", String(checked));
+      ib.dataset.line = String(i + 1);
+      if (external && flags.startsWith("D")) ib.disabled = true;
+      if (checked) { const c = document.createElement("span"); c.className = "check"; c.textContent = "✓"; ib.appendChild(c); }
+      const s = document.createElement("span"); s.textContent = label; ib.appendChild(s);
+      ib.onclick = (ev) => { ev.stopPropagation(); closePopup(i + 1); };
+      list.appendChild(ib);
+      if (i + 1 === chosen) atTop = ib;
+    });
+    list.style.left = Math.max(4, cr.left + l * sx) + "px";
+    list.style.top = (cr.top + b * sy) + "px";
+    list.style.minWidth = Math.max(60, (r - l) * sx) + "px";
+    document.body.appendChild(list);
+    // the Menu Manager puts popUpItem at the given top: the list moves up by the items above it
+    if (external && atTop) list.style.top = Math.max(4, cr.top + b * sy - atTop.offsetTop) + "px";
+    // kept in the window: above the button when there is no room under it
+    const lr = list.getBoundingClientRect();
+    if (lr.bottom > innerHeight - 4) list.style.top = Math.max(4, Math.min(cr.top + t * sy - lr.height - 6, innerHeight - lr.height - 4)) + "px";
+    if (lr.right > innerWidth - 4) list.style.left = Math.max(4, innerWidth - lr.width - 4) + "px";
+    const opened = performance.now();
+    const o = { list, player, external: !!external,
+      outside: (e) => { if (!list.contains(e.target)) { e.stopPropagation(); e.preventDefault(); closePopup(0); } },
+      // the opening press let go over a line (dragged into the list): that line
+      release: (e) => {
+        const el = document.elementFromPoint(e.clientX, e.clientY), ib = el && el.closest && el.closest(".popup button");
+        const late = performance.now() - opened > 150;
+        if (ib && list.contains(ib) && !ib.disabled && late) closePopup(+ib.dataset.line);
+        // a 68K external's menu goes with the press, as the Menu Manager's: let go elsewhere, nothing is chosen
+        else if (external && late && !(el && list.contains(el))) closePopup(0);
+      },
+      keys: (e) => { if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); closePopup(0); } },
+    };
+    popupOpen = o;
+    document.addEventListener("pointerdown", o.outside, true);
+    window.addEventListener("pointerup", o.release, true);
+    document.addEventListener("keydown", o.keys, true);
+    const sel = list.querySelector('[aria-checked="true"]');
+    if (sel) sel.scrollIntoView({ block: "nearest" });
+  }
+  // the player says when a handler has been running a while and when it ended ("busy"): the bar greys after 300 ms of it
+  // (an idle handler that runs long for a moment does not make it flicker), and a list open then closes
+  let busyTimer = 0;
+  function setBusy(on) {
+    clearTimeout(busyTimer);
+    if (!on) { bar.classList.remove("busy"); bar.removeAttribute("aria-disabled"); return; }
+    busyTimer = setTimeout(() => { bar.classList.add("busy"); bar.setAttribute("aria-disabled", "true"); closeMenu(); }, 300);
+  }
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && open) { closeMenu(); e.preventDefault(); } }, true);
+  const dlg = document.getElementById("dialog");
+  /** A dialog over the card's middle, as HyperCard puts it over the card window (the browser's own place is the window's
+   *  middle, away from a card at the top left); kept inside the window */
+  function place(d) {
+    const r = document.getElementById("card").getBoundingClientRect(), w = d.offsetWidth, h = d.offsetHeight;
+    const left = Math.max(8, Math.min(innerWidth - w - 8, r.left + (r.width - w) / 2));
+    const top = Math.max(8, Math.min(innerHeight - h - 8, r.top + (r.height - h) / 2));
+    d.style.margin = "0"; d.style.inset = top + "px auto auto " + left + "px";
+  }
+  function dialog(m, player) {
+    dlg.oncancel = null; dlg.onclose = null;
+    if (m.dialog === "answerFile") { answerFileDialog(m, player); return; }
+    if (m.dialog === "popupMenu") { popup(m.text, player, true); window.hzDialog = m; return; }
+    document.getElementById("dprompt").textContent = m.prompt;
+    const input = document.getElementById("dinput");
+    // (ask file: a name to save as, in the player's files - this browser keeps them)
+    // (color: a 68K external's Color Picker, GetColor - the colour as #rrggbb both ways)
+    const picking = m.dialog === "color";
+    const asking = m.dialog === "ask" || m.dialog === "password" || m.dialog === "askFile" || picking;
+    input.style.display = asking ? "" : "none";
+    input.type = m.dialog === "password" ? "password" : picking ? "color" : "text";
+    input.value = m.text || "";
+    document.getElementById("dlist").style.display = "none";
+    const box = document.getElementById("dbuttons");
+    box.textContent = "";
+    m.buttons.forEach((label, i) => {
+      if (label == null || label === "") return;
+      const b = document.createElement("button");
+      b.textContent = label;
+      if (i === m.buttons.length - 1) b.className = "default";
+      b.onclick = () => { replied = true; dlg.close(); player.reply(i + 1, input.value); player.focus(); };
+      box.appendChild(b);
+    });
+    let replied = false;
+    dlg.onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); box.lastChild && box.lastChild.click(); } };
+    // Escape (the browser's cancel closes a modal dialog with no reply: the player waited for one for ever): Cancel, the first
+    // button, of ask, ask file and the colour dialog, as the desktop's GDialog (Escape, Command-period); answer stays open -
+    // shown again should the browser close it anyway (a cancel it does not let the page stop, Escape pressed twice)
+    dlg.oncancel = (e) => { e.preventDefault(); if (asking) box.firstChild && box.firstChild.click(); };
+    dlg.onclose = () => { if (!replied && window.hzDialog === m) { dlg.showModal(); place(dlg); } };
+    dlg.showModal();
+    place(dlg);
+    if (asking && !picking) { input.focus(); if (m.dialog === "askFile") input.select(); } else box.lastChild.focus();
+    window.hzDialog = m;
+  }
+  // answer file (PlayerUiHost.answerFile): the player's files to choose from (m.text, a path a line), buttons Cancel, Open,
+  // Upload…; Open replies 2 with the chosen path, Upload… lets the user pick a file on the computer and replies 3 with its
+  // name and size - the worker then asks for its bytes a piece at a time (player.js uploadPiece)
+  function answerFileDialog(m, player) {
+    document.getElementById("dprompt").textContent = m.prompt;
+    document.getElementById("dinput").style.display = "none";
+    const list = document.getElementById("dlist"), pick = document.getElementById("dfile");
+    list.textContent = "";
+    const files = (m.text || "").split("\n").filter((f) => f.length);
+    for (const f of files) { const o = document.createElement("option"); o.value = f; o.textContent = f; list.appendChild(o); }
+    list.style.display = files.length ? "" : "none";
+    if (files.length) list.selectedIndex = 0;
+    const box = document.getElementById("dbuttons");
+    box.textContent = "";
+    const [cancelLabel, openLabel, uploadLabel] = m.buttons;
+    const done = (n, s) => { dlg.close(); player.reply(n, s); player.focus(); };
+    const upload = document.createElement("button");
+    upload.textContent = uploadLabel || "Upload…"; upload.className = "left";
+    upload.onclick = () => { pick.value = ""; pick.click(); };
+    pick.onchange = () => {
+      const f = pick.files && pick.files[0];
+      if (!f) return;
+      player.uploading = f;
+      done(3, f.name + "\n" + f.size);
+    };
+    const cancel = document.createElement("button");
+    cancel.textContent = cancelLabel || "Cancel";
+    cancel.onclick = () => done(1, "");
+    const open = document.createElement("button");
+    open.textContent = openLabel || "Open"; open.className = "default"; open.disabled = !files.length;
+    open.onclick = () => { if (list.value) done(2, list.value); };
+    list.ondblclick = () => open.click();
+    box.append(upload, cancel, open);
+    dlg.onkeydown = (e) => { if (e.key === "Enter") { e.preventDefault(); if (!open.disabled) open.click(); } };
+    dlg.oncancel = (e) => { e.preventDefault(); done(1, ""); };
+    dlg.showModal();
+    place(dlg);
+    (files.length ? list : upload).focus();
+    window.hzDialog = m;
+  }
+  // Button Info / Field Info (PartInfo.describe's lines): each change goes to the player as it is made (the name as it is
+  // typed), which puts it into the part at once and sends the part as it is then; the values are brought up to date in place
+  // (not the box being typed in). Close, Escape or Return end it.
+  const info = document.getElementById("info");
+  let infoToken = null, nameTimer = 0, pending = null;
+  const flushName = () => { clearTimeout(nameTimer); const p = pending; pending = null; if (p) p(); };
+  function partInfo(text, player, update) {
+    const lines = text.split("\n").filter(l => l.length).map(l => l.split("\t"));
+    const token = (lines.find(f => f[0] === "W") || [])[1];
+    if (update && !(info.open && token === infoToken)) return; // (the window was closed, or shows another part now)
+    if (info.open && token === infoToken) { // the same part: its values now
+      for (const f of lines) {
+        const el = info.querySelector('[data-prop="' + f[1] + '"]');
+        if (!el || el === document.activeElement && f[0] === "E") continue;
+        if (f[0] === "E" || f[0] === "P") el.value = f[3]; else if (f[0] === "C") el.checked = f[3] === "1";
+      }
+      return;
+    }
+    infoToken = token;
+    info.textContent = "";
+    const send = (prop, value) => player.sendText(player.EV.PART_INFO, token + "\n" + prop + "\t" + value);
+    let facts = null, checks = null, closeLabel = "Close";
+    for (const f of lines) {
+      if (f[0] === "T") { const h = document.createElement("h2"); h.id = "infotitle"; h.textContent = f[1]; info.appendChild(h); }
+      else if (f[0] === "L") { if (!facts) { facts = document.createElement("div"); facts.className = "facts"; info.appendChild(facts); } const d = document.createElement("div"); d.textContent = f[1]; facts.appendChild(d); }
+      else if (f[0] === "E" || f[0] === "P") {
+        const row = document.createElement("label"); row.className = "row";
+        const t = document.createElement("span"); t.textContent = f[2]; row.appendChild(t);
+        let el;
+        if (f[0] === "E") {
+          el = document.createElement("input"); el.type = "text"; el.spellcheck = false; el.value = f[3] || "";
+          el.addEventListener("input", () => { clearTimeout(nameTimer); pending = () => send(f[1], el.value); nameTimer = setTimeout(flushName, 250); });
+          el.addEventListener("change", flushName);
+        } else {
+          el = document.createElement("select");
+          for (const o of f.slice(4)) { const [v, label] = o.split("|"); const op = document.createElement("option"); op.value = v; op.textContent = label || v; el.appendChild(op); }
+          el.value = f[3];
+          el.addEventListener("change", () => send(f[1], el.value));
+        }
+        el.dataset.prop = f[1];
+        row.appendChild(el); info.appendChild(row);
+        if (f[0] === "E") facts = null;
+      }
+      else if (f[0] === "C") {
+        if (!checks) { checks = document.createElement("div"); checks.className = "checks"; info.appendChild(checks); }
+        const l = document.createElement("label"), c = document.createElement("input");
+        c.type = "checkbox"; c.checked = f[3] === "1"; c.dataset.prop = f[1];
+        c.addEventListener("change", () => send(f[1], c.checked ? "true" : "false"));
+        l.appendChild(c); l.appendChild(document.createTextNode(f[2])); checks.appendChild(l);
+      }
+      else if (f[0] === "B") closeLabel = f[1];
+    }
+    const box = document.createElement("div"); box.className = "buttons";
+    const close = document.createElement("button"); close.type = "button"; close.className = "default"; close.textContent = closeLabel;
+    close.onclick = () => info.close();
+    box.appendChild(close); info.appendChild(box);
+    info.onkeydown = (e) => { if (e.key === "Enter" && e.target.tagName !== "BUTTON") { e.preventDefault(); info.close(); } };
+    info.onclose = () => { flushName(); infoToken = null; player.focus(); };
+    if (!info.open) info.showModal();
+    place(info);
+    const first = info.querySelector("input[type=text]"); if (first) { first.focus(); first.select(); }
+    window.hzInfo = text;
+  }
+  // The virtual game pad, for a stack that reads keys as they are held (Export for Web lists its keys: data-gamepad, from
+  // the strings it gives KStealKeyX, its 68K externals that call GetKeys, its arrowKey handler) on a touch screen, which has
+  // no keyboard: the arrows (or WASD, or the keypad's 8 4 6 2) on a d-pad, the other keys as buttons, the first one the
+  // stack uses most. Each finger presses what is under it (a finger on the d-pad goes round it, one on the buttons slides
+  // from one to the next); a key is held while a finger is on it, with the keyboard's repeat. ?gamepad=1 shows it on any
+  // screen, ?gamepad=0 never, ?gamepad=up,down,space its keys; the small button hides it (remembered in this browser).
+  const pad = gamePad();
+  function gamePad() {
+    const none = { reserve: () => ({ w: 0, h: 0 }), layout() {} };
+    const asked = q.get("gamepad"), forced = asked !== null && asked !== "0" && asked !== "off";
+    if (asked === "0" || asked === "off") return none;
+    let tokens = (forced && asked !== "1" && asked !== "on" && asked !== "" ? asked : document.documentElement.dataset.gamepad || "")
+      .split(/[\s,]+/).map((t) => t.toLowerCase()).filter((t) => t);
+    const touch = matchMedia("(pointer: coarse)").matches || (navigator.maxTouchPoints > 0 && !matchMedia("(pointer: fine)").matches);
+    if (!forced && (!tokens.length || !touch)) return none;
+    if (!tokens.length) tokens = ["up", "down", "left", "right", "space", "return"];
+    // token -> [browser key code, character, modifier bit, label, its name under it]
+    const NAMED = { up: [38, 0, 0, "▲"], down: [40, 0, 0, "▼"], left: [37, 0, 0, "◀"], right: [39, 0, 0, "▶"],
+      space: [32, 32, 0, "␣", "space"], return: [13, 0, 0, "⏎", "return"], enter: [13, 0, 0, "⌤", "enter", 1], tab: [9, 0, 0, "⇥", "tab"],
+      esc: [27, 0, 0, "esc"], delete: [8, 0, 0, "⌫", "delete"], fwddelete: [46, 0, 0, "⌦", "del"], comma: [188, 44, 0, ","],
+      shift: [16, 0, 1, "⇧", "shift"], option: [18, 0, 2, "⌥", "option"], command: [91, 0, 4, "⌘", "command"], control: [17, 0, 8, "⌃", "control"] };
+    const PUNCT = { ";": 186, "=": 187, "-": 189, ".": 190, "/": 191, "`": 192, "[": 219, "\\": 220, "]": 221, "'": 222 };
+    function keyOf(t) {
+      if (NAMED[t]) { const k = NAMED[t]; return { code: k[0], ch: k[1], mod: k[2], label: k[3], name: k[4] || "", keypad: k[5] || 0 }; }
+      let m = /^num([0-9])$/.exec(t);
+      if (m) return { code: 96 + +m[1], ch: 48 + +m[1], mod: 0, label: m[1], name: "keypad", keypad: 1 };
+      if ([...t].length !== 1) return null;
+      const c = t.codePointAt(0);
+      if (/[a-z0-9]/.test(t)) return { code: t.toUpperCase().charCodeAt(0), ch: c, mod: 0, label: t.toUpperCase(), name: "" };
+      return PUNCT[t] ? { code: PUNCT[t], ch: c, mod: 0, label: t, name: "" } : null;
+    }
+    const has = (t) => tokens.includes(t);
+    const GROUPS = [["up", "down", "left", "right"], ["w", "s", "a", "d"], ["num8", "num2", "num4", "num6"]];
+    let dirs = null; // [up, down, left, right] tokens (null: a direction the stack does not read)
+    if (GROUPS[0].some(has)) dirs = GROUPS[0].map((t) => (has(t) ? t : null));
+    else for (const g of GROUPS.slice(1)) if (!dirs && g.every(has)) dirs = g;
+    // another full set of directions (a second player's) gives its buttons' room to the stack's other keys
+    const left = new Set(dirs || []);
+    for (const g of GROUPS) if (g.every(has) && !(dirs && dirs.includes(g[0]))) g.forEach((t) => left.add(t));
+    const buttons = tokens.filter((t) => !left.has(t) && keyOf(t)).slice(0, 6);
+    if (!dirs && !buttons.length) return none;
+
+    const root = document.getElementById("pad"), toggle = document.getElementById("padtoggle");
+    let dpad = null;
+    const arms = {};
+    if (dirs) {
+      dpad = document.createElement("div"); dpad.className = "dpad"; dpad.setAttribute("aria-hidden", "true");
+      ["up", "down", "left", "right"].forEach((side, i) => {
+        const a = document.createElement("div"); a.className = "arm " + side + (dirs[i] ? "" : " unused");
+        a.textContent = dirs[i] && !GROUPS[0].includes(dirs[i]) ? keyOf(dirs[i]).label : NAMED[side][3];
+        dpad.appendChild(a); if (dirs[i]) arms[dirs[i]] = a;
+      });
+      root.appendChild(dpad);
+    } else root.appendChild(document.createElement("div"));
+    const btns = document.createElement("div"); btns.className = "padbtns";
+    const buttonOf = {};
+    for (const t of buttons) {
+      const k = keyOf(t), b = document.createElement("div");
+      b.className = "padbtn"; b.dataset.key = t; b.setAttribute("aria-hidden", "true");
+      b.textContent = k.label;
+      if (k.name) { const s = document.createElement("small"); s.textContent = k.name; b.appendChild(s); }
+      btns.appendChild(b); buttonOf[t] = b;
+    }
+    root.appendChild(btns);
+    root.hidden = false; toggle.hidden = false;
+    window.hzPad = { dirs, buttons };
+
+    // the keys held, each with its repeat timer; the fingers on the pad, each with the keys under it
+    const held = new Map(), fingers = new Map();
+    const send = (t, down) => { const k = keyOf(t); if (window.hzPlayer) window.hzPlayer.padKey(down, k.code, k.ch, k.mod, k.keypad); };
+    function sync() {
+      const want = new Set();
+      for (const f of fingers.values()) for (const t of f.keys) want.add(t);
+      for (const [t, timer] of [...held]) if (!want.has(t)) { clearTimeout(timer); clearInterval(timer); held.delete(t); send(t, false); }
+      for (const t of want) {
+        if (held.has(t)) continue;
+        send(t, true);
+        if (navigator.vibrate && (!navigator.userActivation || navigator.userActivation.hasBeenActive)) try { navigator.vibrate(6); } catch (e) {}
+        // the keyboard's repeat (not for a modifier key): Return or an arrow held goes on as on a Mac
+        held.set(t, keyOf(t).mod ? 0 : setTimeout(() => { if (held.has(t)) held.set(t, setInterval(() => send(t, true), 83)); }, 500));
+      }
+      for (const [t, el] of Object.entries(arms).concat(Object.entries(buttonOf))) el.classList.toggle("on", held.has(t));
+    }
+    function keysAt(f, x, y) {
+      if (f.dpad) {
+        const r = dpad.getBoundingClientRect(), dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height / 2);
+        if (Math.hypot(dx, dy) < r.width * 0.12) return [];
+        // eight ways round the centre: a diagonal holds both its keys
+        const s = ((Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) % 8) + 8) % 8;
+        const ways = [[3], [3, 1], [1], [1, 2], [2], [2, 0], [0], [0, 3]][s];
+        return ways.map((i) => dirs[i]).filter((t) => t);
+      }
+      const el = document.elementFromPoint(x, y), b = el && el.closest && el.closest("#pad .padbtn");
+      return b ? [b.dataset.key] : [];
+    }
+    root.addEventListener("pointerdown", (e) => {
+      const on = e.target.closest(".dpad, .padbtn");
+      if (!on || root.classList.contains("off")) return;
+      e.preventDefault(); e.stopPropagation();
+      try { root.setPointerCapture(e.pointerId); } catch (err) {}
+      const f = { dpad: on === dpad, keys: [] };
+      fingers.set(e.pointerId, f);
+      f.keys = keysAt(f, e.clientX, e.clientY); sync();
+    });
+    root.addEventListener("pointermove", (e) => {
+      const f = fingers.get(e.pointerId);
+      if (!f) return;
+      const k = keysAt(f, e.clientX, e.clientY);
+      if (k.join() !== f.keys.join()) { f.keys = k; sync(); }
+    });
+    const lift = (e) => { if (fingers.delete(e.pointerId)) sync(); };
+    for (const k of ["pointerup", "pointercancel", "lostpointercapture"]) root.addEventListener(k, lift);
+    // (no scrolling, zooming, text selection or the long-press menu from the pad; the keyboard keeps its focus)
+    for (const k of ["touchstart", "touchmove"]) root.addEventListener(k, (e) => { if (e.target.closest(".dpad, .padbtn")) e.preventDefault(); }, { passive: false });
+    root.addEventListener("contextmenu", (e) => e.preventDefault());
+    root.addEventListener("mousedown", (e) => { e.preventDefault(); e.stopPropagation(); });
+    const liftAll = () => { fingers.clear(); sync(); };
+    window.addEventListener("blur", liftAll);
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") liftAll(); });
+
+    let off = false;
+    try { off = localStorage.getItem("hz-gamepad-off") === "1"; } catch (e) {}
+    function setOff(v) {
+      off = v; liftAll();
+      root.classList.toggle("off", off);
+      toggle.setAttribute("aria-label", off ? "Show the game pad" : "Hide the game pad");
+      toggle.setAttribute("aria-pressed", off ? "false" : "true");
+      try { localStorage.setItem("hz-gamepad-off", off ? "1" : "0"); } catch (e) {}
+      refit();
+    }
+    toggle.addEventListener("pointerdown", (e) => e.stopPropagation());
+    toggle.addEventListener("click", (e) => { e.stopPropagation(); setOff(!off); if (window.hzPlayer) window.hzPlayer.focus(); });
+    root.classList.toggle("off", off);
+    toggle.setAttribute("aria-pressed", off ? "false" : "true");
+    if (off) toggle.setAttribute("aria-label", "Show the game pad");
+    const stage = document.getElementById("stage");
+    let landscape = false;
+    return {
+      // the room the card leaves the pad: under it when the screen stands, at both sides when it lies
+      layout() {
+        landscape = window.innerWidth > window.innerHeight * 1.15;
+        root.classList.toggle("landscape", landscape);
+        const r = this.reserve();
+        stage.style.padding = landscape ? "16px " + (16 + r.w / 2) + "px" : "16px 16px " + (16 + r.h) + "px";
+      },
+      reserve() {
+        if (off) return { w: 0, h: landscape ? 0 : 44 };
+        if (landscape) return { w: 2 * (Math.max(dpad ? dpad.offsetWidth : 0, btns.offsetWidth) + 24), h: 0 };
+        return { w: 0, h: root.offsetHeight };
+      },
+    };
+  }
+  // the card as large as the window lets it, under the menu bar and above the message box and the status line, keeping its
+  // shape (?zoom=1: at its own size); the worker draws it at that many screen pixels a card pixel, so its text stays sharp
+  const card = document.getElementById("card"), fitting = q.get("zoom") !== "1";
+  let cardW = card.width, cardH = card.height, fitQueued = false;
+  function fit() {
+    fitQueued = false;
+    // the window less the stage's padding, the screen's frame, the menu bar, the message box and the error line (heights that
+    // do not change with the card's size)
+    const PAD = 16, FRAME = 2;
+    const barH = bar.hidden ? 0 : bar.offsetHeight;
+    const msgH = msgbox.style.display === "block" ? msgbox.offsetHeight + 10 : 0;
+    const statusH = status.textContent ? status.offsetHeight + 8 : 0;
+    pad.layout(); // (the game pad's room: under the card, or at its sides)
+    const room = pad.reserve();
+    const availW = document.documentElement.clientWidth - PAD * 2 - FRAME - room.w, availH = window.innerHeight - PAD * 2 - FRAME - barH - msgH - statusH - room.h;
+    const scale = fitting ? Math.max(0.25, Math.min(8, availW / cardW, availH / cardH)) : 1;
+    card.style.width = Math.round(cardW * scale) + "px"; card.style.height = Math.round(cardH * scale) + "px";
+    if (window.hzPlayer) window.hzPlayer.setScale(scale * (window.devicePixelRatio || 1));
+    window.hzScale = scale;
+  }
+  const refit = () => { if (!fitQueued) { fitQueued = true; setTimeout(fit, 0); placeCardOffset(); } }; // (not requestAnimationFrame: none in a hidden tab)
+  let cardOffset = [0, 0];
+  function placeCardOffset() {
+    const screenEl = document.getElementById("screen");
+    if (!screenEl) return;
+    const s = card.clientWidth && cardW ? card.clientWidth / cardW : 1;
+    const maxX = Math.max(0, innerWidth / 2), maxY = Math.max(0, innerHeight / 2);
+    const dx = Math.max(-maxX, Math.min(maxX, cardOffset[0] * s)), dy = Math.max(-maxY, Math.min(maxY, cardOffset[1] * s));
+    screenEl.style.transform = dx || dy ? "translate(" + dx + "px," + dy + "px)" : "";
+  }
+  // (and once more a moment after the window changed: the first event can come before the new size is laid out)
+  const resized = () => { refit(); setTimeout(refit, 200); };
+  window.addEventListener("resize", resized);
+  refitHook = refit;
+  if (window.visualViewport) window.visualViewport.addEventListener("resize", resized);
+  // the browser lets the page's sound run only after a click or a key (autoplay rules): a stack that plays music as it opens
+  // (M.J.DASH's QuickTime music, a play in openStack) was silent. When the sound cannot run yet, the stack starts on a click
+  // (?click=0: at once, without its sound until the first click)
+  if (q.get("click") !== "0") await soundAllowed();
+  async function soundAllowed() {
+    const a = ctx();
+    if (!a || running(a)) return;
+    await Promise.race([a.resume().catch(() => {}), new Promise((r) => setTimeout(r, 150))]);
+    if (running(a)) return;
+    const button = document.getElementById("loadstart");
+    loadbar.hidden = true; loadtext.textContent = "This stack may play sound."; button.hidden = false;
+    loading.hidden = false;
+    button.focus({ preventScroll: true });
+    await new Promise((go) => {
+      const start = (e) => { if (e.type === "keydown" && !["Enter", " "].includes(e.key)) return; e.preventDefault(); ctx(); done(); go(); };
+      const done = () => { for (const k of ["pointerdown", "keydown"]) document.removeEventListener(k, start, true); };
+      for (const k of ["pointerdown", "keydown"]) document.addEventListener(k, start, true);
+    });
+    button.hidden = true; loadbar.hidden = false; starting();
+  }
+  const player = await HyperZebraPlayer.start({
+    canvas: document.getElementById("card"), args, stack, name, others, status: show,
+    // the stacks' changes are kept in this browser (?reset: what was kept is forgotten; data-save="off": nothing is kept)
+    keep: document.documentElement.dataset.save !== "off", reset: new URLSearchParams(location.search).has("reset"),
+    wasm, wasmBytes, catalog, firstFrame: loaded,
+    // the page round the card: HyperCard's screen outside the card window (a click there is the running handler's mouseClick)
+    desktop: [document.body, document.getElementById("stage"), document.getElementById("wrap")],
+    cardSized: (w, h) => { cardW = w; cardH = h; refit(); },
+    handlers: {
+      status: (m) => show(m.text),
+      trace: (m) => { window.hzTrace.push(m.text); if (window.hzTrace.length > 200) window.hzTrace.shift(); },
+      title: (m) => { document.title = m.text + " - HyperZebra"; },
+      error: (m) => { loaded(); show("ERROR " + m.text); window.hzError = m.text; },
+      log: (m) => { (window.hzLog = window.hzLog || []).push(m.text); if (window.hzLog.length > 2000) window.hzLog.shift(); console.log(m.text); },
+      scripterror: (m) => { (window.hzScriptErrors = window.hzScriptErrors || []).push(m.text); console.warn(m.text); },
+      loaded: () => { window.hzLoaded = true; },
+      // the card window moved by a script (set the loc of card window: HyperPiece 2's カードフラフラ〜): the card goes that far
+      // from its place on the page, in card pixels, kept on the page
+      cardWindowOffset: (m) => { const v = (m.text || "0,0").split(","); cardOffset = [+v[0] || 0, +v[1] || 0]; placeCardOffset(); },
+      // hide card window / show card window: the card goes (its place stays; a click there is off the card, as on HyperCard's desktop)
+      cardWindowVisible: (m) => { card.style.visibility = m.text === "false" ? "hidden" : ""; },
+      beep: () => beep(),
+      sound: (m) => soundData(m),
+      note: (m) => note(m),
+      stopSound: () => stopSound(),
+      pcm: (m) => pcm(m),
+      dialog: (m, p) => dialog(m, p),
+      popup: (m, p) => popup(m.text, p),
+      partInfo: (m, p) => partInfo(m.text, p, false),
+      partInfoUpdate: (m, p) => partInfo(m.text, p, true),
+      msg: (m) => { msgbox.value = m.text; },
+      // Go > Find…: the insertion point in the message box (between the quotes of find "")
+      msgCaret: (m) => { const n = +m.text || 0; setTimeout(() => { msgbox.focus(); msgbox.setSelectionRange(n, n); }, 0); },
+      busy: (m) => setBusy(m.text === "true"),
+      menus: (m, p) => { const was = bar.hidden; menus(m.text, p); if (bar.hidden !== was) refit(); },
+      msgVisible: (m) => { msgbox.style.display = m.text === "true" ? "block" : "none"; msgover.style.display = m.text === "true" && msgOverlayOn ? "block" : "none"; refit(); },
+      msgOverlay: (m) => msgOverlay(m),
+    },
+  });
+  if (!player) { loaded(); return; }
+  window.hzPlayer = player;
+  refit();
+  msgbox.addEventListener("keydown", (e) => {
+    e.stopPropagation();
+    if (e.key === "Enter") { e.preventDefault(); player.sendText(player.EV.MSG, msgbox.value); }
+  });
+  player.focus();
+})();
+</script>
+</body>
+</html>
