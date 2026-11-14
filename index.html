@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>HyperZebra — クラシックMacアプリ環境とHyperCardクローン</title>
-  <meta name="description" content="HyperCardのスタックを開いて閲覧・編集・実行でき、クラシックMacの68K・PowerPCアプリもROMやOSなしで動かせる無料ソフト。macOS・Windows・Linux対応。">
+  <meta name="description" content="HyperCardスタックの閲覧・編集・実行とWeb出力に対応する無料ソフト。作ったスタックをブラウザで公開でき、クラシックMacの68K・PowerPCアプリもROMやOSなしで動かせます。macOS・Windows・Linux対応。">
   <link rel="canonical" href="https://pgostation.github.io/HyperZebra-site/">
   <meta name="theme-color" content="#faf9f6">
   <meta property="og:type" content="website">
   <meta property="og:title" content="HyperZebra — クラシックMacアプリ環境とHyperCardクローン">
-  <meta property="og:description" content="HyperCardのスタックを開いて閲覧・編集・実行でき、クラシックMacの68K・PowerPCアプリもROMやOSなしで動かせる無料ソフト。macOS・Windows・Linux対応。">
+  <meta property="og:description" content="HyperCardスタックの閲覧・編集・実行とWeb出力に対応する無料ソフト。作ったスタックをブラウザで公開でき、クラシックMacの68K・PowerPCアプリもROMやOSなしで動かせます。macOS・Windows・Linux対応。">
   <meta property="og:locale" content="ja_JP">
   <link rel="alternate" hreflang="en" href="en/index.html">
   <link rel="stylesheet" href="assets/style.css">
@@ -19,17 +19,18 @@
 <div class="shell">
   <header class="site-header">
     <a class="wordmark" href="index.html">HyperZebra</a>
-    <nav class="header-links" aria-label="リンクと表示言語"><a href="apps/">アプリ一覧</a><a class="repository" href="https://github.com/pgostation/HyperZebra">GitHub</a><span lang="ja" aria-current="page">日本語</span><a lang="en" hreflang="en" href="en/index.html">English</a></nav>
+    <nav class="header-links" aria-label="リンクと表示言語"><a href="apps/">アプリ一覧</a><a href="wasm/">Webスタック</a><a class="repository" href="https://github.com/pgostation/HyperZebra">GitHub</a><span lang="ja" aria-current="page">日本語</span><a lang="en" hreflang="en" href="en/index.html">English</a></nav>
   </header>
   <main id="main">
     <div class="hero">
       <div class="hero-text">
         <h1>HyperZebra</h1>
         <p class="subtitle">クラシックMacアプリ環境とHyperCardクローン</p>
-        <p class="hero-intro">HyperCardのスタックを読み込んで、眺めたり、作ったり、動かしたりできるソフトです。あの頃のクラシックMacの68K・PowerPCアプリも、特別なROMやOSのインストールなしでそのまま動かせます。</p>
+        <p class="hero-intro">HyperCardのスタックを読み込んで、眺めたり、作ったり、動かしたりできるソフトです。スタックをWeb用に書き出して、ブラウザで遊べる形で公開することもできます。あの頃のクラシックMacの68K・PowerPCアプリも、特別なROMやOSのインストールなしでそのまま動かせます。</p>
         <div class="hero-download">
           <a class="download-button" href="https://github.com/pgostation/HyperZebra/releases">HyperZebraをダウンロード <span aria-hidden="true">↓</span></a>
           <p class="download-note">macOS・Windows・Linux対応／無料。GitHub Releasesの配布ページが開きます。</p>
+          <p class="download-note"><a href="wasm/LUTIAWeb/index.html">インストール不要のWebスタックを試す — The Adventures of LUTIA</a></p>
         </div>
         <p class="independence-notice">HyperZebraは非公式の互換環境です。Apple Inc.とは一切関係がなく、同社による開発・承認・支援を受けたものではありません。</p>
       </div>
@@ -78,7 +79,7 @@
     </section>
 
     <section class="section" id="start" aria-labelledby="heading-start">
-      <h2 id="heading-start">使いかた</h2>
+      <h2 id="heading-start">HyperZebraの使いかた</h2>
       <ol class="steps">
         <li><strong>ダウンロードする</strong><a href="https://github.com/pgostation/HyperZebra/releases">GitHub Releases</a>からお使いのOS向けのファイルをダウンロードし、展開します。</li>
         <li><strong>ファイルを開く</strong>アプリを起動してランチャーを表示させたら、使いたいスタックやアプリのファイルをウィンドウにドロップするだけです。圧縮ファイルやイメージファイルもそのままドロップするだけ。</li>
@@ -105,7 +106,22 @@
 <details class="faq-item" id="faq-hypercard-save"><summary>編集したスタックはどのように保存されますか？</summary><div class="faq-answer"><p>HyperCardスタックを開くと、HyperZebra用の形式に変換され、元のファイルのすぐ隣にひとつの <code>.hzb</code> ファイルとして保存されます。次回からはこの <code>.hzb</code> ファイルを開く仕組みです。通常のファイルと同じようにダブルクリックで起動でき、ほかの人への共有やコピーも簡単に行えます（旧バージョンで作った <code>.hzb</code> もそのまま開けます）。</p><p>HyperCard形式への書き戻しも可能ですが、カラー表示などHyperZebra独自の機能は引き継がれませんので、元のスタックファイルと作業用の <code>.hzb</code> ファイルは大切に保管してください。</p></div></details>
 <details class="faq-item" id="faq-hypercard-features"><summary>HyperCardにはない独自の機能はありますか？</summary><div class="faq-answer"><ul><li>レイヤーをサポートしたカラーペイント機能</li><li>カラー、グラデーション、透明度、回転などを設定でき、SVGの読み込みにも対応した編集可能な図形オブジェクト</li><li>複数の部品をまとめてデータやスクリプトを持たせられる「パネル」機能</li><li>内容を表や階層付きのアウトラインとして視覚化できるフィールド</li><li>配列・辞書型データを扱えるHyperTalk拡張、Webからのテキスト取得、JSON解析、正規表現のサポート</li><li>アイコン、カーソル、サウンドなどを視覚的に編集できるリソースエディタ</li></ul></div></details>
 <details class="faq-item" id="faq-hypertalk"><summary>スクリプトの記述やデバッグはできますか？</summary><div class="faq-answer"><p>スクリプトエディタには、入力時のアシスト機能や豊富なリファレンス、処理を一時停止して変数の状態を追いかけられるデバッガを搭載しています。一行ずつステップ実行しながら、コードと画面の動きを丁寧に確認できます。</p></div></details>
-<details class="faq-item" id="faq-hypercard-create"><summary>新しくどんなものを作れますか？</summary><div class="faq-answer"><p>インタラクティブな絵本やクイズ、ちょっとしたゲームなどを自由に作ることができます。なお、作成したスタックを単体の実行ファイルに変換したり、Web用に書き出したりする機能は現在のところ備えていません。</p></div></details>
+<details class="faq-item" id="faq-hypercard-create"><summary>新しくどんなものを作れますか？</summary><div class="faq-answer"><p>インタラクティブな絵本やクイズ、ちょっとしたゲームなどを自由に作ることができます。作ったスタックは <code>.hzb</code> ファイルで共有するほか、<a href="#faq-hypercard-web">Web用に書き出してブラウザで遊べるページとして公開</a>できます。</p></div></details>
+<details class="faq-item" id="faq-hypercard-web">
+  <summary>スタックをWebに公開するには？</summary>
+  <div class="faq-answer">
+    <p>作ったスタックや読み込んだHyperCardスタックをWeb用に書き出せます。公開したページは、HyperZebraをインストールしていない人もブラウザで開いて遊べます。</p>
+    <ol>
+      <li><strong>スタックを書き出す：</strong>スタックを開き、ファイルメニューの「Web用に書き出す…」（Export for Web…）を選びます。スタックとWebプレーヤーがひとつのフォルダに出力されます。</li>
+      <li><strong>ブラウザで確かめる：</strong>書き出し後の「ブラウザで試す」から、手元のパソコンで動作を確認できます。スクリプトや音、外部コマンドなど、スタックで使う機能を確認してください。</li>
+      <li><strong>フォルダごと公開する：</strong>出力したフォルダをWebサーバーに配置し、その中の <code>index.html</code> を開きます。URLを共有すれば、パソコンやスマートフォンからアクセスできます。</li>
+    </ol>
+    <p>ファイルを直接開く <code>file://</code> では動作しないため、手元で確認するときは「ブラウザで試す」を使ってください。</p>
+    <p>HyperTalkや音、カラー表示、68Kの外部コマンド（XCMD・XFCN）などに対応しています。一方、PowerPCの外部コマンドやペイントツールなど、Webプレーヤーでは未対応の機能もあります。書き出し時の注意表示を確認し、公開前にブラウザで動作を確かめてください。</p>
+    <p>公開例：<a href="wasm/LUTIAWeb/index.html">The Adventures of LUTIAをブラウザで遊ぶ</a> · <a href="wasm/#browsers">ブラウザの動作確認結果</a></p>
+  </div>
+</details>
+<details class="faq-item" id="faq-hypercard-web-browsers"><summary>Webスタックはスマートフォンでも動きますか？</summary><div class="faq-answer"><p>このサイトのLUTIAでは、AndroidのChromeとiPhoneのSafariで問題なく動作することを確認しています。Androidの標準ブラウザではエラーが発生しました。同じ症状が出る場合はChromeで開いてください。端末やブラウザのバージョンによって結果は異なるため、詳しくは<a href="wasm/#browsers">今回の動作確認結果</a>をご覧ください。</p></div></details>
       </div>
 
       <div class="faq-group" id="faq-mac"><h3>クラシックMacアプリ</h3>
@@ -133,7 +149,7 @@
       </div>
     </section>
   </main>
-  <footer class="site-footer"><div class="footer-notices"><p>HyperZebraは非公式の互換環境です。本プロジェクトはApple Inc.とは一切関係がなく、同社による開発・承認・支援を受けたものではありません。</p><p>掲載したスタックやアプリには、それぞれの作者による利用・配布条件があります。掲載画像はmacOS上の実画面です。</p><p>Macintosh、HyperCard、HyperTalk、Mac、macOS、QuickDrawおよびQuickTimeは、Apple Inc.の商標または登録商標です。その他の製品名・サービス名は、各権利者の商標です。</p><p><time datetime="2026-10-27">更新：2026年10月27日</time></p></div><a href="#top">ページの先頭へ ↑</a></footer>
+  <footer class="site-footer"><div class="footer-notices"><p>HyperZebraは非公式の互換環境です。本プロジェクトはApple Inc.とは一切関係がなく、同社による開発・承認・支援を受けたものではありません。</p><p>掲載したスタックやアプリには、それぞれの作者による利用・配布条件があります。掲載画像はmacOS上の実画面です。</p><p>Macintosh、HyperCard、HyperTalk、Mac、macOS、QuickDrawおよびQuickTimeは、Apple Inc.の商標または登録商標です。その他の製品名・サービス名は、各権利者の商標です。</p><p><time datetime="2026-11-14">更新：2026年11月14日</time></p></div><a href="#top">ページの先頭へ ↑</a></footer>
 </div>
 </body>
 </html>

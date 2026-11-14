@@ -15,4 +15,10 @@
   <url>
     <loc>https://pgostation.github.io/HyperZebra-site/</loc>
   </url>
+  <url>
+    <loc>https://pgostation.github.io/HyperZebra-site/wasm/LUTIAWeb/</loc>
+  </url>
+  <url>
+    <loc>https://pgostation.github.io/HyperZebra-site/wasm/</loc>
+  </url>
 </urlset>

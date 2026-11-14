@@ -4,21 +4,58 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Webスタック一覧 — HyperZebra</title>
-  <meta name="description" content="HyperZebraで変換したWebで動作するHyperCardスタック">
+  <meta name="description" content="HyperZebraのWeb出力で公開したHyperCardスタック。The Adventures of LUTIAをブラウザで遊べます。AndroidのChrome・iPhoneのSafariでの動作確認結果も掲載。">
   <meta name="theme-color" content="#faf9f6">
+  <link rel="canonical" href="https://pgostation.github.io/HyperZebra-site/wasm/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:title" content="Webスタック一覧 — HyperZebra">
+  <meta property="og:description" content="The Adventures of LUTIAをインストール不要で遊べます。HyperZebraのWeb出力による公開例とブラウザの動作確認結果。">
+  <meta property="og:url" content="https://pgostation.github.io/HyperZebra-site/wasm/">
   <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body id="top">
+<a class="skip-link" href="#main">本文へ移動</a>
 <div class="shell">
   <header class="site-header">
     <a class="wordmark" href="../index.html">HyperZebra</a>
+    <nav class="header-links" aria-label="サイト内リンク"><a href="../apps/">アプリ一覧</a><span aria-current="page">Webスタック</span><a href="https://github.com/pgostation/HyperZebra">GitHub</a></nav>
   </header>
   <main id="main" class="catalog-main">
-    <li><a href="LUTIAWeb/">The Adventures of LUTIA</a></li>
-    
-    </ul></section>
-    <p><a href="../index.html">HyperZebra</a> · <a href="https://github.com/pgostation/HyperZebra/releases">ダウンロード</a></p>
+    <nav class="breadcrumbs" aria-label="パンくず"><a href="../index.html">ホーム</a><span aria-hidden="true"> / </span><span aria-current="page">Webスタック</span></nav>
+    <header class="catalog-heading">
+      <h1>Webスタック一覧</h1>
+      <p>HyperZebraの「Web用に書き出す…」で公開したスタックです。HyperZebraのインストールなしで、ブラウザから遊べます。</p>
+    </header>
+
+    <section class="section" aria-labelledby="heading-lutia">
+      <h2 id="heading-lutia">The Adventures of LUTIA</h2>
+      <p>HyperCardスタック「The Adventures of LUTIA」（LUTIA 1.60）のWeb版です。</p>
+      <p><a class="download-button" href="LUTIAWeb/">LUTIAをブラウザで遊ぶ <span aria-hidden="true">→</span></a></p>
+      <p><a href="LUTIA%20f.zip" download>The Adventures of LUTIAのスタックをダウンロード（ZIP）</a><br>パソコンのHyperZebraで開くための <code>.hzb</code> ファイルを含みます。</p>
+      <p>スマートフォンなどのタッチ画面では、画面上のゲームパッドで操作できます。</p>
+    </section>
+
+    <section class="section" id="browsers" aria-labelledby="heading-browsers">
+      <h2 id="heading-browsers">ブラウザの動作確認結果</h2>
+      <p>このサイトで公開しているLUTIAについて、次の結果を確認しています。</p>
+      <dl class="app-facts">
+        <div><dt>Android / Chrome</dt><dd>問題なく動作しました。</dd></div>
+        <div><dt>iPhone / Safari</dt><dd>問題なく動作しました。</dd></div>
+        <div><dt>Android / 標準ブラウザ</dt><dd>エラーが発生しました。エラーになる場合はChromeで開いてください。</dd></div>
+      </dl>
+      <p class="record-note">今回確認した環境での結果です。端末の機種、OS・ブラウザのバージョン、Androidの標準ブラウザの具体的な製品名は未記録です。すべての端末・ブラウザでの動作を保証するものではありません。</p>
+    </section>
+
+    <section class="section" aria-labelledby="heading-export">
+      <h2 id="heading-export">自分のスタックもWebに公開する</h2>
+      <p>HyperZebraでスタックを開き、ファイルメニューの「Web用に書き出す…」を選びます。出力したフォルダをWebサーバーに配置すると、その中の <code>index.html</code> から実行できます。</p>
+      <p>手元で確かめるときは、書き出し後の「ブラウザで試す」を使ってください。ファイルを直接開く <code>file://</code> では動作しません。</p>
+      <p><a href="../index.html#faq-hypercard-web">Web出力の手順を見る</a> · <a href="../index.html#faq-hypercard-web">対応機能と注意点を見る</a></p>
+    </section>
+    <p><a href="../index.html">HyperZebraのホーム</a> · <a href="https://github.com/pgostation/HyperZebra/releases">HyperZebraをダウンロード</a></p>
   </main>
+  <footer class="site-footer"><p><time datetime="2026-11-14">更新：2026年11月14日</time></p><a href="#top">上に戻る ↑</a></footer>
 </div>
 </body>
 </html>
