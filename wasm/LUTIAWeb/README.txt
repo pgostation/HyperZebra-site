@@ -1,4 +1,4 @@
-This folder plays LUTIA 1.6 in a web browser (HyperZebra web player).
+This folder plays LUTIA 1.60 in a web browser (HyperZebra web player).
 
 How to use it
 - Put the whole folder on a web server and open index.html there.
@@ -34,4 +34,4 @@ Files
 - player.wasm: HyperZebra's HyperTalk core, built with TeaVM
 - player-68k.wasm: the same with HyperZebra's 68K Macintosh emulation, for the stack's external commands
 - wasm-gc-runtime.min.js: TeaVM's runtime (Apache License 2.0, see TeaVM-LICENSE.txt)
-- LUTIA 1.6.hzb: the stack
+- LUTIA 1.60.hzb: the stack
