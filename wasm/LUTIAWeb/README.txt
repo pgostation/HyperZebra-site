@@ -13,6 +13,9 @@ What it does
   play (the stack's sounds and notes), beep, colour (AddColor), PICT pictures, shapes, paint layers,
   the other stacks this one goes to.
 - Command-period (Ctrl-period) stops a running handler.
+- A stack with translations (Languages/<tag>.po) has a language button (a globe at the right of the menu bar):
+  Original shows it as it is, the others in that language (HyperZebra's menus and dialogs too). The choice is kept
+  for the page; index.html?lang=en or ?lang=original chooses in a link; <html data-langmenu="off"> leaves it out.
 - Changes are kept in the browser, for this page, as HyperCard keeps a stack's changes: the stack opens again
   as it was left (a stack that can't be modified keeps only what its scripts save with "save stack").
   File > Save a Copy... downloads the stack with its changes. index.html?reset forgets them; a new export of
